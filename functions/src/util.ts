@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 
 /** Database path to store QR code tokens */
 export const QR_RTDB_PATH =
-  (process.env.QR_RTDB_PATH as string) || '/qr_signin_tokens';
+  (process.env.QR_RTDB_PATH as string) || '/qr_signin';
 
 /** QR code expiration time (in ms) */
 export const QR_EXPIRATION_TIME =

@@ -26,3 +26,9 @@ node_modules/
 
 # Firebase config
 .firebaserc
+
+# Test config
+config/
+
+# Rollup TypeScript cache
+.rpt2_cache/

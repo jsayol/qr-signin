@@ -16,7 +16,7 @@ import {
 
 initAdmin();
 
-exports.getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
+const getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
   return new Promise((resolve, reject) => {
     // Automatically allow cross-origin requests.
     try {
@@ -118,3 +118,5 @@ exports.getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
     }
   });
 });
+
+exports = module.exports = getSignInQRCode;

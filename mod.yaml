@@ -28,7 +28,7 @@ resources:
 env:
   - var: QR_RTDB_PATH
     label: Database path for QR codes
-    default: qr_signin_tokens
+    default: qr_signin
     validationRegex: ^\S+$
     validationErrorMessage: Path cannot have spaces.
     description: >-
@@ -36,7 +36,7 @@ env:
       information about the generated QR codes?
   - var: QR_EXPIRATION_TIME
     label: QR code expiration time (ms)
-    default: 10000
+    default: "10000"
     validationRegex: ^\d+$
     validationErrorMessage: Invalid QR_EXPIRATION_TIME, must be a positive integer.
     description: >-
@@ -49,5 +49,5 @@ env:
     validationErrorMessage: "Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H."
     description: >-
       What error correction capability should the generated QR codes have? It's OK to
-      leave this on low if the codes will be read from a computer screen.
+      leave this on L (*low*) if the codes will be read from a computer screen.
       Possible values are: L (for 7%), M (for 15%), Q (for 25%), H (for 30%).

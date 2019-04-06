@@ -16,7 +16,7 @@ initAdmin();
  * Once correctly authenticated, it generates a custom token (JWT) that the
  * web session can use to sign in.
  */
-exports.authenticateQRCode = functionsPrefix.https.onCall(
+const authenticateQRCode = functionsPrefix.https.onCall(
   async (data, context) => {
     // Mock auth context during development
     if (process.env.BUILD === 'dev') {
@@ -176,3 +176,5 @@ async function addCustomTokenToQRCodeToken(
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 }
+
+exports = module.exports = authenticateQRCode;
