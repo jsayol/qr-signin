@@ -3,28 +3,20 @@ import * as admin from 'firebase-admin';
 import * as qrcode from 'qrcode';
 import cors from 'cors';
 import { randomBytes } from 'crypto';
-import { writeFileSync } from 'fs';
 import {
   RTDB_QR_PATH,
   QR_CODE_BG_COLOR,
   QR_CODE_FG_COLOR,
   QR_CODE_ERROR_LEVEL,
   QR_CODE_SCALE,
-  QR_CODE_MARGIN
+  QR_CODE_MARGIN,
+  functionsPrefix,
+  initAdmin
 } from './util';
 
-if (process.env.BUILD === 'dev') {
-  const app = admin.initializeApp({
-    databaseURL: `http://localhost:9000?ns=debug`,
-    projectId: 'debug'
-  });
-  (app as any).INTERNAL.getToken = () =>
-    Promise.resolve({ accessToken: 'owner' });
-} else {
-  admin.initializeApp();
-}
+initAdmin();
 
-exports.getSignInQRCode = functions.handler.https.onRequest((req, res) => {
+exports.getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
   return new Promise((resolve, reject) => {
     // Automatically allow cross-origin requests.
     try {
@@ -42,7 +34,7 @@ exports.getSignInQRCode = functions.handler.https.onRequest((req, res) => {
           randomBuffer = randomBytes(96); // A 96-byte input generates a 128-byte base64 string.
         } catch (err) {
           // Something went wrong while generating random bytes.
-          console.error('Failed to generate random bytes!');
+          console.error('Failed to generate random bytes!', err);
           throw new functions.https.HttpsError('internal', 'Internal error.');
         }
 
@@ -65,7 +57,7 @@ exports.getSignInQRCode = functions.handler.https.onRequest((req, res) => {
             });
         } catch (err) {
           // Something went wrong while writing to the database.
-          console.error('Failed to write QR code token to the database!');
+          console.error('Failed to write QR code token to the database!', err);
           throw new functions.https.HttpsError('internal', 'Internal error.');
         }
 
@@ -82,15 +74,14 @@ exports.getSignInQRCode = functions.handler.https.onRequest((req, res) => {
           } as qrcode.QRCodeOptions);
         } catch (err) {
           // Something went wrong while generating the QR code.
-          console.error('Failed to generate QR code!');
+          console.error('Failed to generate QR code!', err);
           throw new functions.https.HttpsError('internal', 'Internal error.');
         }
 
-        const [, encoding, data] = qrCodeData.match(
-          /^data:.+\/(.+);base64,(.*)$/
+        const [, data] = qrCodeData.match(
+          /^data:[^;]+;base64,(.*)$/
         ) as string[];
         const qrBuffer = Buffer.from(data, 'base64');
-        writeFileSync('data.' + encoding, qrBuffer);
 
         res.status(200);
         res.setHeader('Content-Type', 'image/png');

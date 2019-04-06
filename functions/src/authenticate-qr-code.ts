@@ -1,6 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { RTDB_QR_PATH, QRCodeInfo, QR_CODE_EXPIRATION_TIME } from './util';
+import {
+  RTDB_QR_PATH,
+  QRCodeInfo,
+  QR_CODE_EXPIRATION_TIME,
+  functionsPrefix,
+  initAdmin
+} from './util';
+
+initAdmin();
 
 /**
  * Uses a QR code that has been read from an already-authenticated session
@@ -8,8 +16,13 @@ import { RTDB_QR_PATH, QRCodeInfo, QR_CODE_EXPIRATION_TIME } from './util';
  * Once correctly authenticated, it generates a custom token (JWT) that the
  * web session can use to sign in.
  */
-exports.authenticateQRCode = functions.handler.https.onCall(
+exports.authenticateQRCode = functionsPrefix.https.onCall(
   async (data, context) => {
+    // Mock auth context during development
+    if (process.env.BUILD === 'dev') {
+      context.auth = { uid: '123456780' } as any;
+    }
+
     // Check that the user is authenticated.
     if (!context.auth) {
       throw new functions.https.HttpsError(
@@ -38,11 +51,21 @@ exports.authenticateQRCode = functions.handler.https.onCall(
       );
     }
 
-    // Generate a custom token for the authenticated user id.
-    const customToken = await generateCustomToken(context.auth.uid);
+    try {
+      // Generate a custom token for the authenticated user id.
+      const customToken = await generateCustomToken(context.auth.uid);
+      // Add the custom token to the QR code token in the database.
+      await addCustomTokenToQRCodeToken(qrCodeToken, customToken);
+    } catch (err) {
+      // Since there's been some problem while generating or storing a
+      // custom token, let's remove the used QR code token before exiting.
+      await removeQRCodeToken(qrCodeToken);
+      throw err;
+    }
 
-    // Add the custom token to the QR code token in the database.
-    await addCustomTokenToQRCodeToken(qrCodeToken, customToken);
+    // Done! We don't need to comunicate anything to the client at this point
+    // (other than the 200 response that it will receive) so there's no need to
+    // send any response here.
   }
 );
 
@@ -60,7 +83,7 @@ async function isQRCodeTokenValid(qrCodeToken: string): Promise<boolean> {
       .once('value');
   } catch (err) {
     // Something went wrong while reading from the database.
-    console.error('Failed to read QR code token from the database!');
+    console.error('Failed to read QR code token from the database!', err);
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 
@@ -83,12 +106,15 @@ async function isQRCodeTokenValid(qrCodeToken: string): Promise<boolean> {
   }
 
   // Check that the token hasn't been used already
-  if (!('used' in qrCodeInfo) || typeof qrCodeInfo.used !== 'boolean' || qrCodeInfo.used === true) {
+  if (
+    'used' in qrCodeInfo &&
+    (typeof qrCodeInfo.used !== 'boolean' || qrCodeInfo.used === true)
+  ) {
     return false;
   }
 
   // Check that the token hasn't expired.
-  if (qrCodeInfo.ts + QR_CODE_EXPIRATION_TIME >= Date.now()) {
+  if (qrCodeInfo.ts + QR_CODE_EXPIRATION_TIME <= Date.now()) {
     // Since the QR code token has already expired, it can safely be removed
     // from the database.
     await removeQRCodeToken(qrCodeToken);
@@ -108,7 +134,7 @@ async function removeQRCodeToken(qrCodeToken: string): Promise<void> {
       .remove();
   } catch (err) {
     // Something went wrong while removing the database.
-    console.error('Failed to remove QR code token from the database!');
+    console.error('Failed to remove QR code token from the database!', err);
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 }
@@ -120,7 +146,7 @@ async function generateCustomToken(uid: string): Promise<string> {
     customToken = await admin.auth().createCustomToken(uid);
   } catch (err) {
     // Something went wrong while generating the custom token.
-    console.error('Failed to generate custom token!');
+    console.error('Failed to generate custom token!', err);
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 
@@ -146,7 +172,7 @@ async function addCustomTokenToQRCodeToken(
       });
   } catch (err) {
     // Something went wrong while writing to the database.
-    console.error('Failed to write custom token to the database!');
+    console.error('Failed to write custom token to the database!', err);
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 }

@@ -7,3 +7,6 @@ typings/
 
 # Rollup TypeScript ache
 .rpt2_cache/
+
+# Test config
+config/
