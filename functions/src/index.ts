@@ -7,3 +7,7 @@ if (!functionName || functionName === 'getSignInQRCode') {
 if (!functionName || functionName === 'authenticateQRCode') {
   exports.authenticateQRCode = require('./authenticate-qr-code').authenticateQRCode;
 }
+
+if (!functionName || functionName === 'qrTokensCleanup') {
+  exports.qrTokensCleanup = require('./qr-tokens-cleanup').qrTokensCleanup;
+}
