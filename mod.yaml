@@ -1,0 +1,41 @@
+specVersion: v1beta1
+name: qr-signin
+version: 1.0.0
+description: Perform mobile-to-web cross login with QR codes.
+
+roles:
+  - firebase.developAdmin
+
+resources:
+  - name: deploy
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+
+env:
+  - var: RTDB_QR_PATH
+    label: Database path for QR codes
+    default: qr_signin_tokens
+    validationRegex: ^\S+$
+    validationErrorMessage: Path cannot have spaces.
+    description: >-
+      What is the database path in which you want the mod to store temporary
+      information about the generated QR codes?
+  - var: QR_CODE_EXPIRATION_TIME
+    label: QR code expiration time (ms)
+    default: 10000
+    validationRegex: ^\d+$
+    validationErrorMessage: Invalid QR_CODE_EXPIRATION_TIME, must be a positive integer.
+    description: >-
+      For how long, in miliseconds, should a generated QR code be valid before
+      expiring? This should ideally be under 15000 (15 seconds).
+  - var: QR_CODE_ERROR_LEVEL
+    label: QR code error correction level
+    default: L
+    validationRegex: ^(L|M|Q|H)$
+    validationErrorMessage: Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H.
+    description: >-
+      What error correction capability should the generated QR codes have? It's ok to
+      leave this on low if the codes we'll be read from a computer screen.
+      Possible values are: L (for 7%), M (for 15%), Q (for 25%), H (for 30%).
