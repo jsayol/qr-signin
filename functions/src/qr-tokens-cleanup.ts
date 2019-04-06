@@ -35,5 +35,9 @@ exports.qrTokensCleanup = (functionsPrefix.pubsub
         toRemove[snap.ref.path] = null;
       }
     });
+
+    if (Object.keys(toRemove).length > 0) {
+      await admin.database().ref().update(toRemove);
+    }
   }
 );
