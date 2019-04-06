@@ -46,8 +46,8 @@ env:
     label: QR code error correction level
     default: L
     validationRegex: ^(L|M|Q|H)$
-    validationErrorMessage: Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H.
+    validationErrorMessage: "Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H."
     description: >-
-      What error correction capability should the generated QR codes have? It's ok to
-      leave this on low if the codes we'll be read from a computer screen.
+      What error correction capability should the generated QR codes have? It's OK to
+      leave this on low if the codes will be read from a computer screen.
       Possible values are: L (for 7%), M (for 15%), Q (for 25%), H (for 30%).
