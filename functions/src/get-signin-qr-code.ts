@@ -11,8 +11,7 @@ import {
   QR_CODE_SCALE,
   QR_CODE_MARGIN,
   functionsPrefix,
-  initAdmin,
-  QR_EXPIRATION_TIME
+  initAdmin
 } from './util';
 
 initAdmin();
