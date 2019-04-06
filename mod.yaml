@@ -7,14 +7,19 @@ roles:
   - firebase.developAdmin
 
 resources:
-  - name: deploy
+  - name: getSignInQRCode
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+  - name: authenticateQRCode
     type: firebasemods.v1beta1.function
     properties:
       runtime: nodejs8
       httpsTrigger: {}
 
 env:
-  - var: RTDB_QR_PATH
+  - var: QR_RTDB_PATH
     label: Database path for QR codes
     default: qr_signin_tokens
     validationRegex: ^\S+$
@@ -22,11 +27,11 @@ env:
     description: >-
       What is the database path in which you want the mod to store temporary
       information about the generated QR codes?
-  - var: QR_CODE_EXPIRATION_TIME
+  - var: QR_EXPIRATION_TIME
     label: QR code expiration time (ms)
     default: 10000
     validationRegex: ^\d+$
-    validationErrorMessage: Invalid QR_CODE_EXPIRATION_TIME, must be a positive integer.
+    validationErrorMessage: Invalid QR_EXPIRATION_TIME, must be a positive integer.
     description: >-
       For how long, in miliseconds, should a generated QR code be valid before
       expiring? This should ideally be under 15000 (15 seconds).

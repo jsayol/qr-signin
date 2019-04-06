@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {
-  RTDB_QR_PATH,
+  QR_RTDB_PATH,
   QRCodeInfo,
-  QR_CODE_EXPIRATION_TIME,
+  QR_EXPIRATION_TIME,
   functionsPrefix,
   initAdmin
 } from './util';
@@ -32,7 +32,7 @@ exports.authenticateQRCode = functionsPrefix.https.onCall(
     }
 
     // QR code token passed from the client.
-    const qrCodeToken = data.qr;
+    const qrCodeToken = data.token;
 
     // Check the QR code token attribute.
     if (typeof qrCodeToken !== 'string' || qrCodeToken.length !== 128) {
@@ -78,7 +78,7 @@ async function isQRCodeTokenValid(qrCodeToken: string): Promise<boolean> {
   try {
     qrSnap = await admin
       .database()
-      .ref(RTDB_QR_PATH)
+      .ref(QR_RTDB_PATH)
       .child(qrCodeToken)
       .once('value');
   } catch (err) {
@@ -114,7 +114,7 @@ async function isQRCodeTokenValid(qrCodeToken: string): Promise<boolean> {
   }
 
   // Check that the token hasn't expired.
-  if (qrCodeInfo.ts + QR_CODE_EXPIRATION_TIME <= Date.now()) {
+  if (qrCodeInfo.ts + QR_EXPIRATION_TIME <= Date.now()) {
     // Since the QR code token has already expired, it can safely be removed
     // from the database.
     await removeQRCodeToken(qrCodeToken);
@@ -129,7 +129,7 @@ async function removeQRCodeToken(qrCodeToken: string): Promise<void> {
   try {
     await admin
       .database()
-      .ref(RTDB_QR_PATH)
+      .ref(QR_RTDB_PATH)
       .child(qrCodeToken)
       .remove();
   } catch (err) {
@@ -164,7 +164,7 @@ async function addCustomTokenToQRCodeToken(
   try {
     await admin
       .database()
-      .ref(RTDB_QR_PATH)
+      .ref(QR_RTDB_PATH)
       .child(qrCodeToken)
       .update({
         used: true,

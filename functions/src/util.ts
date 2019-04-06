@@ -2,12 +2,12 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 /** Database path to store QR code tokens */
-export const RTDB_QR_PATH =
-  (process.env.RTDB_QR_PATH as string) || '/qr_signin_tokens';
+export const QR_RTDB_PATH =
+  (process.env.QR_RTDB_PATH as string) || '/qr_signin_tokens';
 
 /** QR code expiration time (in ms) */
-export const QR_CODE_EXPIRATION_TIME =
-  Number(process.env.QR_CODE_EXPIRATION_TIME) || 10000;
+export const QR_EXPIRATION_TIME =
+  Number(process.env.QR_EXPIRATION_TIME) || 10000;
 
 /** QR code error correction level - L (7%), M (15%), Q (25%), H (30%) */
 export const QR_CODE_ERROR_LEVEL =
@@ -32,9 +32,12 @@ export interface QRCodeInfo {
   ct?: string; // Generated custom token
 }
 
-export const functionsPrefix =
+export const functionsPrefix: typeof functions | typeof functions.handler =
   process.env.BUILD === 'dev' ? functions : functions.handler;
 
+/**
+ * Initialize the Admin SDK for the appropriate environment
+ */
 export function initAdmin() {
   try {
     if (process.env.USE_EMULATOR) {
