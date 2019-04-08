@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class QRScannerActivity extends AppCompatActivity
@@ -27,11 +29,14 @@ public class QRScannerActivity extends AppCompatActivity
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
+    private HashSet<String> seenCodes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
+
+        seenCodes = new HashSet<String>();
 
         preview = (CameraSourcePreview) findViewById(R.id.firePreview);
         if (preview == null) {
@@ -73,10 +78,16 @@ public class QRScannerActivity extends AppCompatActivity
                     }
 
                     if (isValidQRCode(qrValue)) {
+                        String qrToken = qrValue.substring(QR_VALID_PREFIX.length());
                         Intent returnIntent = getIntent();
-                        returnIntent.putExtra("qrValue", qrValue);
-                        setResult(returnIntent.getIntExtra("requestCode", 0), returnIntent);
+                        returnIntent.putExtra("qrToken", qrToken);
+                        setResult(RESULT_OK, returnIntent);
                         finish();
+                    } else {
+                        if (!seenCodes.contains(qrValue)) {
+                            seenCodes.add(qrValue);
+                            showSnackbar("Invalid authentication QR code");
+                        }
                     }
                 }
             }
@@ -190,12 +201,13 @@ public class QRScannerActivity extends AppCompatActivity
     }
 
     protected boolean isValidQRCode(String qrCode) {
-        // TODO: uncomment this after changing the format of the generated QR codes
-//        final boolean isValidPrefix = qrCode.startsWith(QR_VALID_PREFIX);
-//        final boolean isValidLength = qrCode.length() == (128 + QR_VALID_PREFIX.length());
-//
-//        return isValidPrefix && isValidLength;
+        final boolean isValidPrefix = qrCode.startsWith(QR_VALID_PREFIX);
+        final boolean isValidLength = qrCode.length() > 100;
+        return isValidPrefix && isValidLength;
+//        return true;
+    }
 
-        return true;
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 }

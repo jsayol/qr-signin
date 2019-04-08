@@ -30,8 +30,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
-    private static final int RC_CODE_VALUE = 9002;
-    private static final String AUTHENTICATE_QR_CODE_ENDPOINT = "mod-qr-signin-7cab-authenticateQRCode";
+    private static final int RC_QR_TOKEN = 9002;
+    private static final String AUTHENTICATE_QR_CODE_ENDPOINT = "mod-qr-signin-2783-authenticateQRCode";
 
     private FirebaseAuth mAuth;
     private FirebaseFunctions mFunctions;
@@ -81,35 +81,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Sign In Failed", Toast.LENGTH_SHORT).show();
                 updateUI(null);
             }
-        } else if (requestCode == RC_CODE_VALUE) {
-            String qrValue = data.getStringExtra("qrValue");
-            Log.i(TAG, "CODE = " + qrValue);
+        } else if (requestCode == RC_QR_TOKEN) {
+            if (data != null) {
+                String qrToken = data.getStringExtra("qrToken");
 
-            // Vibrate for 250 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // deprecated in API 26
-                vibrator.vibrate(250);
-            }
-
-            Task<String> authTask = authenticateQRCode(qrValue);
-            authTask.addOnCompleteListener(new OnCompleteListener<String>() {
-                @Override
-                public void onComplete(@NonNull Task<String> task) {
-                    if (task.isSuccessful()) {
-                        // Task completed successfully
-                        String result = task.getResult();
-                        Log.i(TAG, "Web client authenticated correctly: " + result);
-                        showSnackbar("Web client authenticated correctly!");
-                    } else {
-                        // Task failed with an exception
-                        Exception exception = task.getException();
-                        Log.i(TAG, "Failed to authenticate web client: " + exception);
-                        showSnackbar("Failed to authenticate web client.");
-                    }
+                // Vibrate for 250 milliseconds
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    // deprecated in API 26
+                    vibrator.vibrate(250);
                 }
-            });
+
+                Task<String> authTask = authenticateQRCode(qrToken);
+                authTask.addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            // Task completed successfully
+                            String result = task.getResult();
+                            Log.i(TAG, "Web client authenticated correctly: " + result);
+                            showSnackbar("Web client authenticated correctly!");
+                        } else {
+                            // Task failed with an exception
+                            Exception exception = task.getException();
+                            Log.i(TAG, "Failed to authenticate web client: " + exception);
+                            showSnackbar("Failed to authenticate web client.");
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -155,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void scanQRCode() {
         Intent qrScannerIntent = new Intent(getApplicationContext(), QRScannerActivity.class);
-        qrScannerIntent.putExtra("requestCode", RC_CODE_VALUE);
-        startActivityForResult(qrScannerIntent, RC_CODE_VALUE);
+        qrScannerIntent.putExtra("requestCode", RC_QR_TOKEN);
+        startActivityForResult(qrScannerIntent, RC_QR_TOKEN);
     }
 
     @Override
@@ -174,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private Task<String> authenticateQRCode(String qrValue) {
+    private Task<String> authenticateQRCode(String qrToken) {
         // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
-        data.put("token", qrValue);
+        data.put("token", qrToken);
 
         return mFunctions
                 .getHttpsCallable(AUTHENTICATE_QR_CODE_ENDPOINT)
