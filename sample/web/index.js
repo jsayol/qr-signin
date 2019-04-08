@@ -86,10 +86,13 @@ function startFetchingQRCode(tries) {
 function getQRCode() {
   enableSpinner();
 
-  fetch(ENDPOINT, {
-    cache: 'no-cache',
-    body: JSON.stringify({ prev: previousToken }),
-  })
+  var url = ENDPOINT;
+
+  if (previousToken) {
+    url = url + '?prev=' + encodeURIComponent(previousToken);
+  }
+
+  fetch(url, { cache: 'no-cache' })
     .then(response => response.json())
     .then(json => {
       document.getElementById('qrsample-code-image').src = json.qr;
