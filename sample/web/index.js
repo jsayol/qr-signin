@@ -1,8 +1,9 @@
 //@ts-check
 'use strict';
 
+var RTDB_PREFIX = 'qr_signin';
 var ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-9f13-getSignInQRCode';
+  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-7cab-getSignInQRCode';
 
 var customTokenRef;
 
@@ -46,6 +47,9 @@ function initApp() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
+
+      document.getElementById('qrsample-code-image').src = '';
+
       var displayName = user.displayName;
       var email = user.email;
       var emailVerified = user.emailVerified;
@@ -93,7 +97,7 @@ function waitForCustomToken(qrToken) {
     customTokenRef.off();
   }
 
-  customTokenRef = firebase.database().ref('qr_signin_tokens/' + qrToken + '/ct');
+  customTokenRef = firebase.database().ref(RTDB_PREFIX).child(qrToken).child('ct');
 
   customTokenRef.on('value', snap => {
     const customToken = snap.val();
