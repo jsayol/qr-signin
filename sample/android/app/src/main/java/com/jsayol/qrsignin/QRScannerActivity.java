@@ -22,6 +22,7 @@ public class QRScannerActivity extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final String TAG = "OldQRScannerActivity";
     private static final int PERMISSION_REQUESTS = 1;
+    private static final String QR_VALID_PREFIX = "qrAuth$";
 
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
@@ -71,10 +72,12 @@ public class QRScannerActivity extends AppCompatActivity
                         qrValue = barcode.getRawValue();
                     }
 
-                    Intent returnIntent = getIntent();
-                    returnIntent.putExtra("qrValue", qrValue);
-                    setResult(returnIntent.getIntExtra("requestCode", 0), returnIntent);
-                    finish();
+                    if (isValidQRCode(qrValue)) {
+                        Intent returnIntent = getIntent();
+                        returnIntent.putExtra("qrValue", qrValue);
+                        setResult(returnIntent.getIntExtra("requestCode", 0), returnIntent);
+                        finish();
+                    }
                 }
             }
         });
@@ -168,7 +171,7 @@ public class QRScannerActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(
-            int requestCode, String[] permissions, int[] grantResults) {
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "Permission granted!");
         if (allPermissionsGranted()) {
             createCameraSource();
@@ -184,5 +187,15 @@ public class QRScannerActivity extends AppCompatActivity
         }
         Log.i(TAG, "Permission NOT granted: " + permission);
         return false;
+    }
+
+    protected boolean isValidQRCode(String qrCode) {
+        // TODO: uncomment this after changing the format of the generated QR codes
+//        final boolean isValidPrefix = qrCode.startsWith(QR_VALID_PREFIX);
+//        final boolean isValidLength = qrCode.length() == (128 + QR_VALID_PREFIX.length());
+//
+//        return isValidPrefix && isValidLength;
+
+        return true;
     }
 }

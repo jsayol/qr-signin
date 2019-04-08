@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,17 +15,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_CODE_VALUE = 9002;
+    private static final String AUTHENTICATE_QR_CODE_ENDPOINT = "mod-qr-signin-7cab-authenticateQRCode";
 
     private FirebaseAuth mAuth;
+    private FirebaseFunctions mFunctions;
 
     private TextView mStatusView;
     private TextView mDetailView;
@@ -34,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        mFunctions = FirebaseFunctions.getInstance();
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -53,9 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         updateUI(mAuth.getCurrentUser());
     }
 
-//    private void showSnackbar(String message) {
-//        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
-//    }
+    private void showSnackbar(String message) {
+        Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -81,6 +92,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // deprecated in API 26
                 vibrator.vibrate(250);
             }
+
+            Task<String> authTask = authenticateQRCode(qrValue);
+            authTask.addOnCompleteListener(new OnCompleteListener<String>() {
+                @Override
+                public void onComplete(@NonNull Task<String> task) {
+                    if (task.isSuccessful()) {
+                        // Task completed successfully
+                        String result = task.getResult();
+                        Log.i(TAG, "Web client authenticated correctly: " + result);
+                        showSnackbar("Web client authenticated correctly!");
+                    } else {
+                        // Task failed with an exception
+                        Exception exception = task.getException();
+                        Log.i(TAG, "Failed to authenticate web client: " + exception);
+                        showSnackbar("Failed to authenticate web client.");
+                    }
+                }
+            });
         }
     }
 
@@ -143,6 +172,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 scanQRCode();
                 break;
         }
+    }
+
+    private Task<String> authenticateQRCode(String qrValue) {
+        // Create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", qrValue);
+
+        return mFunctions
+                .getHttpsCallable(AUTHENTICATE_QR_CODE_ENDPOINT)
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        String result = (String) task.getResult().getData();
+                        return result;
+                    }
+                });
     }
 
 }
