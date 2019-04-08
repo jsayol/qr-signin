@@ -91,7 +91,7 @@
     <string name="id_fmt">User ID: %s</string>
     <string name="email_fmt">Email: %s</string>
 
-    <string name="default_web_client_id" translatable="false">392708749852-b1s94bubd9l3fq2vbdpsldtrhtg80a29.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">392708749852-bgedcr655vsd1e5gea3ouj87u8m0aeoi.apps.googleusercontent.com</string>
 
     <string name="title_activity_qrscanner">QRSCannerActivity</string>
     <string name="dummy_button">Dummy Button</string>
