@@ -49,12 +49,13 @@ li a {
   font-weight: bold;
 }
 pre {
-  overflow-x: scroll;
+  overflow-x: auto;
   line-height: 18px;
 }
 code {
   white-space: pre-wrap;
   word-break: break-all;
+  font-size: 0.9rem;
 }
 h3 {
   background: url('firebase-logo.png') no-repeat;
@@ -80,6 +81,10 @@ h3 {
   z-index: 2;
 }
 
+.currentUser-value {
+  margin-top: 20px;
+}
+
 .qr-container {
   position: relative;
 }
@@ -92,6 +97,26 @@ h3 {
   height: 100%;
 }
 
+body.signed-in h2.signed-out {
+  display: none;
+}
+
+body.signed-out h2.signed-in {
+  display: none;
+}
+
+body.signed-in .qr-container {
+  display: none;
+}
+
+body.signed-out .currentUser-value {
+  display: none;
+}
+
+body.signed-out #qrsample-sign-out {
+  display: none;
+}
+
 .loading-container {
   display: none;
 }
@@ -100,7 +125,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 /** Dual ring spinner **/

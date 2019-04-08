@@ -22,7 +22,6 @@ function signOut() {
   if (firebase.auth().currentUser) {
     firebase.auth().signOut();
   }
-  document.getElementById('qrsample-sign-out').disabled = true;
 }
 
 /**
@@ -34,28 +33,37 @@ function initApp() {
   // Listening for auth state changes.
   firebase.auth().onAuthStateChanged(function(user) {
     var signInStatus = document.getElementById('qrsample-sign-in-status');
-    var signOutButton = document.getElementById('qrsample-sign-out');
 
     if (user) {
       // User is signed in.
 
       disableSpinner();
+
       document.getElementById('qrsample-code-image').src = '';
       if (qrRefreshTimeout) {
         clearTimeout(qrRefreshTimeout);
       }
+
       signInStatus.textContent = 'Signed in as ' + user.email;
-      signOutButton.disabled = false;
-      signOutButton.textContent = 'Sign out';
       document.getElementById(
         'qrsample-account-details'
-      ).textContent = JSON.stringify(user, null, '  ');
+      ).textContent = JSON.stringify(user, null, 2);
+
+      document.body.classList.add('signed-in');
+      document.body.classList.remove('signed-out');
+
+      document.querySelector(
+        'h2.mdl-card__title-text.signed-in'
+      ).textContent = user.displayName
+        ? 'Hi ' + user.displayName + '!'
+        : 'Hello!';
     } else {
       // User is signed out.
       signInStatus.textContent = 'Signed out';
-      signOutButton.disabled = true;
-      signOutButton.textContent = 'Waiting';
       document.getElementById('qrsample-account-details').textContent = 'null';
+
+      document.body.classList.add('signed-out');
+      document.body.classList.remove('signed-in');
 
       startFetchingQRCode();
     }
@@ -139,11 +147,14 @@ function waitForCustomToken(qrToken) {
       enableSpinner();
       customTokenRef.off();
       customTokenRef = null;
-      firebase.auth().signInWithCustomToken(customToken).then(() => {
-        previousToken = null;
-        cancelQRToken(qrToken);
-        disableSpinner();
-      });
+      firebase
+        .auth()
+        .signInWithCustomToken(customToken)
+        .then(() => {
+          previousToken = null;
+          cancelQRToken(qrToken);
+          disableSpinner();
+        });
     }
   });
 }

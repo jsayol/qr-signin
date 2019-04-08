@@ -50,9 +50,25 @@ limitations under the License.
         <div
           class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
           <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">
-            <h2 class="mdl-card__title-text">Sign in by scanning the QR code</h2>
+            <h2 class="mdl-card__title-text signed-out">Sign in by scanning the QR code</h2>
+            <h2 class="mdl-card__title-text signed-in">Hello</h2>
           </div>
           <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+            <!-- Container where we'll display the user details -->
+            <div class="qrsample-user-details-container">
+              Firebase sign-in status:
+              <span id="qrsample-sign-in-status">Unknown</span>
+            </div>
+
+            <button class="mdl-button mdl-js-button mdl-button--raised" id="qrsample-sign-out" name="signout">
+              Sign out
+            </button>
+
+            <div class="currentUser-value">
+              <div>Firebase auth <code>currentUser</code> object value:</div>
+              <pre><code id="qrsample-account-details">null</code></pre>
+            </div>
+
             <div class="qr-container" style="width: 300px; height: 300px;">
               <div>
                 <img id="qrsample-code-image">
@@ -60,18 +76,6 @@ limitations under the License.
               <div class="loading-container" id="loading-container">
                 <div class="lds-dual-ring"></div>
               </div>
-            </div>
-            <br />
-            <button disabled class="mdl-button mdl-js-button mdl-button--raised" id="qrsample-sign-out" name="signin">
-              Waiting
-            </button>
-
-            <!-- Container where we'll display the user details -->
-            <div class="qrsample-user-details-container">
-              Firebase sign-in status:
-              <span id="qrsample-sign-in-status">Unknown</span>
-              <div>Firebase auth <code>currentUser</code> object value:</div>
-              <pre><code id="qrsample-account-details">null</code></pre>
             </div>
           </div>
         </div>
