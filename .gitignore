@@ -32,3 +32,6 @@ config/
 
 # Rollup TypeScript cache
 .rpt2_cache/
+
+# Temporary samples
+sample/other

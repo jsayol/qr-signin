@@ -2,8 +2,12 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { QR_RTDB_PATH, QR_EXPIRATION_TIME } from './util';
 
-// TODO: fix this when the handler namespace has the correct implementation
-const qrTokensCleanup = functions.handler.pubsub.topic.onPublish(async () => {
+const topicBuilder =
+  process.env.BUILD === 'dev' || process.env.NOT_MODS
+    ? functions.pubsub.topic('qr-tokens-cleanup')
+    : functions.handler.pubsub.topic;
+
+const qrTokensCleanup = topicBuilder.onPublish(async () => {
   const toRemove: { [k: string]: null } = {};
 
   // Clean up any expired unused QR code tokens.

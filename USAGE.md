@@ -26,6 +26,6 @@ The workflow from you app to use this mod is as follows:
   2. Decode it and use its value to call the authentication endpoint (it's an HTTPS Callable function).
   3. Wait for the response to find out if the authentication was successful, or if there's been any errors.
 
-The endpoint to generate the QR codes is: ${FUNCTION_URL_GETSIGNINQRCODE}
+The endpoint to generate the QR codes is: ${FUNCTION_URL_GETQRCODE}
 
 The endpoint to authenticate a QR code token is: ${FUNCTION_URL_AUTHENTICATEQRCODE}

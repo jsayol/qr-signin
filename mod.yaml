@@ -8,7 +8,7 @@ roles:
   - iam.serviceAccountTokenCreator # Necessary to create custom tokens
 
 resources:
-  - name: getSignInQRCode
+  - name: getQRCode
     type: firebasemods.v1beta1.function
     properties:
       runtime: nodejs8
@@ -18,13 +18,13 @@ resources:
     properties:
       runtime: nodejs8
       httpsTrigger: {}
-  - name: qrTokensCleanup
-    type: firebasemods.v1beta1.function
-    properties:
-      runtime: nodejs8
-      eventTrigger:
-        eventType: google.pubsub.topic.publish
-        resource: projects/${PROJECT_ID}/topics/qr-tokens-cleanup
+  # - name: qrTokensCleanup
+  #   type: firebasemods.v1beta1.function
+  #   properties:
+  #     runtime: nodejs8
+  #     eventTrigger:
+  #       eventType: google.pubsub.topic.publish
+  #       resource: projects/${PROJECT_ID}/topics/qr-tokens-cleanup
 
 env:
   - var: QR_RTDB_PATH
@@ -36,13 +36,13 @@ env:
       What is the database path in which you want the mod to store temporary
       information about the generated QR codes?
   - var: QR_EXPIRATION_TIME
-    label: QR code expiration time (ms)
-    default: "10000"
+    label: QR code expiration time
+    default: "10"
     validationRegex: ^\d+$
     validationErrorMessage: Invalid QR_EXPIRATION_TIME, must be a positive integer.
     description: >-
-      For how long, in miliseconds, should a generated QR code be valid before
-      expiring? This should ideally be under 15000 (15 seconds).
+      For how long, in seconds, should a generated QR code be valid before
+      expiring? This should ideally be under 15 seconds.
   - var: QR_CODE_ERROR_LEVEL
     label: QR code error correction level
     default: L

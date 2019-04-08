@@ -11,6 +11,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "rimraf lib && rollup -c",
+    "build:notmods": "rimraf lib && rollup -c --environment NOT_MODS",
     "build:dev": "rimraf lib && rollup -c --environment BUILD:dev",
     "build:emu": "rimraf lib && rollup -c --environment BUILD:dev,USE_EMULATOR",
     "serve": "npm run build:dev && firebase serve --only functions",
@@ -41,6 +42,9 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2"
+  },
+  "engines": {
+    "node": "8"
   },
   "private": true,
   "prettier": {

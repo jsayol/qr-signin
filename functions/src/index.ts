@@ -1,7 +1,7 @@
 // const functionName = process.env.FUNCTION_NAME;
 
-// if (!functionName || functionName === 'getSignInQRCode') {
-  exports.getSignInQRCode = require('./get-signin-qr-code');
+// if (!functionName || functionName === 'getQRCode') {
+  exports.getQRCode = require('./get-qr-code');
 // }
 
 // if (!functionName || functionName === 'authenticateQRCode') {
@@ -9,5 +9,5 @@
 // }
 
 // if (!functionName || functionName === 'qrTokensCleanup') {
-  exports.qrTokensCleanup = require('./qr-tokens-cleanup');
+//   exports.qrTokensCleanup = require('./qr-tokens-cleanup');
 // }

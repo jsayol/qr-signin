@@ -4,11 +4,15 @@ import {
   QR_RTDB_PATH,
   QRCodeInfo,
   QR_EXPIRATION_TIME,
-  functionsPrefix,
   initAdmin
 } from './util';
 
 initAdmin();
+
+const handler =
+  process.env.BUILD === 'dev' || process.env.NOT_MODS
+    ? functions
+    : functions.handler;
 
 /**
  * Uses a QR code that has been read from an already-authenticated session
@@ -16,7 +20,7 @@ initAdmin();
  * Once correctly authenticated, it generates a custom token (JWT) that the
  * web session can use to sign in.
  */
-const authenticateQRCode = functionsPrefix.https.onCall(
+const authenticateQRCode = handler.https.onCall(
   async (data, context) => {
     // Mock auth context during development
     if (process.env.BUILD === 'dev') {
@@ -35,7 +39,7 @@ const authenticateQRCode = functionsPrefix.https.onCall(
     const qrCodeToken = data.token;
 
     // Check the QR code token attribute.
-    if (typeof qrCodeToken !== 'string' || qrCodeToken.length !== 128) {
+    if (typeof qrCodeToken !== 'string' || qrCodeToken.length < 100) {
       throw new functions.https.HttpsError(
         'invalid-argument',
         'Missing or malformed QR code token.'

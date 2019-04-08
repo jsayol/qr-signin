@@ -4,19 +4,24 @@ import * as qrcode from 'qrcode';
 import cors from 'cors';
 import { randomBytes } from 'crypto';
 import {
+  initAdmin,
   QR_RTDB_PATH,
   QR_CODE_BG_COLOR,
   QR_CODE_FG_COLOR,
   QR_CODE_ERROR_LEVEL,
   QR_CODE_SCALE,
   QR_CODE_MARGIN,
-  functionsPrefix,
-  initAdmin
+  QR_CODE_PREFIX
 } from './util';
 
 initAdmin();
 
-const getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
+const handler =
+  process.env.BUILD === 'dev' || process.env.NOT_MODS
+    ? functions
+    : functions.handler;
+
+const getQRCode = handler.https.onRequest((req, res) => {
   return new Promise((resolve, reject) => {
     // Automatically allow cross-origin requests.
     try {
@@ -31,7 +36,7 @@ const getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
 
         let randomBuffer: Buffer;
         try {
-          randomBuffer = randomBytes(96); // A 96-byte input generates a 128-byte base64 string.
+          randomBuffer = randomBytes(89);
         } catch (err) {
           // Something went wrong while generating random bytes.
           console.error('Failed to generate random bytes!', err);
@@ -74,7 +79,7 @@ const getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
 
         try {
           // Generate QR for the generated random token.
-          qrCodeData = await qrcode.toDataURL(qrCodeToken, {
+          qrCodeData = await qrcode.toDataURL(QR_CODE_PREFIX + qrCodeToken, {
             margin: QR_CODE_MARGIN,
             scale: QR_CODE_SCALE,
             errorCorrectionLevel: QR_CODE_ERROR_LEVEL,
@@ -119,4 +124,4 @@ const getSignInQRCode = functionsPrefix.https.onRequest((req, res) => {
   });
 });
 
-exports = module.exports = getSignInQRCode;
+exports = module.exports = getQRCode;

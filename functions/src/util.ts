@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 /** Database path to store QR code tokens */
@@ -7,7 +6,7 @@ export const QR_RTDB_PATH =
 
 /** QR code expiration time (in ms) */
 export const QR_EXPIRATION_TIME =
-  Number(process.env.QR_EXPIRATION_TIME) || 10000;
+  1000 * (Number(process.env.QR_EXPIRATION_TIME) || 10);
 
 /** QR code error correction level - L (7%), M (15%), Q (25%), H (30%) */
 export const QR_CODE_ERROR_LEVEL =
@@ -25,15 +24,15 @@ export const QR_CODE_SCALE = 6; // Pixels per dot
 /** QR code margin */
 export const QR_CODE_MARGIN = 4; // Number of dots per side
 
+/** QR code prefix */
+export const QR_CODE_PREFIX = 'qrAuth$';
+
 export interface QRCodeInfo {
   ts: number; // Timestamp
   ip: string; // Client IP address,
   used?: boolean; // Flag to mark the token as used
   ct?: string; // Generated custom token
 }
-
-export const functionsPrefix: typeof functions | typeof functions.handler =
-  process.env.BUILD === 'dev' ? functions : functions.handler;
 
 /**
  * Initialize the Admin SDK for the appropriate environment
@@ -49,13 +48,13 @@ export function initAdmin() {
         Promise.resolve({ accessToken: 'owner' });
     } else if (process.env.BUILD === 'dev') {
       admin.initializeApp({
-        credential: admin.credential.cert('config/serviceAccountKey.json'),
+        credential: admin.credential.cert('../config/serviceAccountKey.json'),
         databaseURL: 'https://mods-test.firebaseio.com'
       });
     } else {
       admin.initializeApp();
     }
   } catch {
-    // Already initiualized
+    // Already initialized
   }
 }
