@@ -2,7 +2,6 @@
 
 var RTDB_PREFIX = 'qr_signin';
 
-// var ENDPOINT = 'https://us-central1-mods-test.cloudfunctions.net/getQRCode';
 var ENDPOINT =
   'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-2783-getQRCode';
 
@@ -13,33 +12,13 @@ var customTokenRef;
 var qrRefreshTimeout;
 
 /**
- * Handle the sign in button press.
+ * Handle the sign out button press.
  */
-function toggleSignIn() {
+function signOut() {
   if (firebase.auth().currentUser) {
     firebase.auth().signOut();
-  } else {
-    var token = document.getElementById('tokentext').value;
-    if (token.length < 10) {
-      alert('Please enter a token in the text area');
-      return;
-    }
-    // Sign in with custom token generated following previous instructions.
-    firebase
-      .auth()
-      .signInWithCustomToken(token)
-      .catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode === 'auth/invalid-custom-token') {
-          alert('The token you provided is not valid.');
-        } else {
-          console.error(error);
-        }
-      });
   }
-  document.getElementById('qrsample-sign-in').disabled = true;
+  document.getElementById('qrsample-sign-out').disabled = true;
 }
 
 /**
@@ -50,7 +29,10 @@ function toggleSignIn() {
 function initApp() {
   // Listening for auth state changes.
   firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
+    var signInStatus = document.getElementById('qrsample-sign-in-status');
+    var signOutButton = document.getElementById('qrsample-sign-out');
+
+  if (user) {
       // User is signed in.
 
       disableSpinner();
@@ -58,28 +40,26 @@ function initApp() {
       if (qrRefreshTimeout) {
         clearTimeout(qrRefreshTimeout);
       }
-
-      document.getElementById('qrsample-sign-in-status').textContent =
-        'Signed in as ' + user.email;
-      document.getElementById('qrsample-sign-in').textContent = 'Sign out';
+      signInStatus.textContent = 'Signed in as ' + user.email;
+      signOutButton.disabled = false;
+      signOutButton.textContent = 'Sign out';
       document.getElementById(
         'qrsample-account-details'
       ).textContent = JSON.stringify(user, null, '  ');
     } else {
       // User is signed out.
-      document.getElementById('qrsample-sign-in-status').textContent =
-        'Signed out';
-      document.getElementById('qrsample-sign-in').textContent = 'Sign In';
+      signInStatus.textContent = 'Signed out';
+      signOutButton.disabled = true;
+      signOutButton.textContent = 'Waiting';
       document.getElementById('qrsample-account-details').textContent = 'null';
 
       startFetchingQRCode();
     }
-    document.getElementById('qrsample-sign-in').disabled = false;
   });
 
   document
-    .getElementById('qrsample-sign-in')
-    .addEventListener('click', toggleSignIn, false);
+    .getElementById('qrsample-sign-out')
+    .addEventListener('click', signOut, false);
 }
 
 function startFetchingQRCode(tries) {
