@@ -8,6 +8,10 @@
   exports.authenticateQRCode = require('./authenticate-qr-code');
 // }
 
+// if (!functionName || functionName === 'cancelQRToken') {
+  exports.cancelQRToken = require('./cancel-qr-token');
+// }
+
 // if (!functionName || functionName === 'qrTokensCleanup') {
 //   exports.qrTokensCleanup = require('./qr-tokens-cleanup');
 // }

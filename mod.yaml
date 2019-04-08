@@ -18,6 +18,11 @@ resources:
     properties:
       runtime: nodejs8
       httpsTrigger: {}
+  - name: cancelQRToken
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
   # - name: qrTokensCleanup
   #   type: firebasemods.v1beta1.function
   #   properties:
@@ -50,5 +55,5 @@ env:
     validationErrorMessage: "Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H."
     description: >-
       What error correction capability should the generated QR codes have? It's OK to
-      leave this on L (*low*) if the codes will be read from a computer screen.
+      leave this on L (*low*) since the codes will be read from a computer screen.
       Possible values are: L (for 7%), M (for 15%), Q (for 25%), H (for 30%).
