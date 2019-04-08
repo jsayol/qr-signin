@@ -50,11 +50,17 @@ limitations under the License.
         <div
           class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
           <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">
-            <h2 class="mdl-card__title-text">Custom Authentication</h2>
+            <h2 class="mdl-card__title-text">Sign in by scanning the QR code</h2>
           </div>
           <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-            <div style="width: 300px; height: 300px;">
-              <img id="qrsample-code-image">
+            <div class="qr-container" style="width: 300px; height: 300px;">
+              <div>
+                <img id="qrsample-code-image">
+              </div>
+              <div class="loading-container" id="loading-container">
+                <div class="lds-dual-ring"></div>
+                <!-- <div class="lds-ring"><div></div><div></div><div></div><div></div></div> -->
+              </div>
             </div>
             <br />
             <button disabled class="mdl-button mdl-js-button mdl-button--raised" id="qrsample-sign-in" name="signin">

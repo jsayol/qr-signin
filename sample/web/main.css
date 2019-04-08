@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-html, body {
+html,
+body {
   font-family: 'Roboto', 'Helvetica', sans-serif;
   background-color: #f5f5f5;
 }
@@ -38,11 +39,13 @@ li a {
 .mdl-layout__header-row {
   padding: 0;
 }
-.qrsample-user-details-container, .user-details-container {
+.qrsample-user-details-container,
+.user-details-container {
   margin-top: 20px;
   line-height: 25px;
 }
-#qrsample-sign-in-status, #sign-in-status {
+#qrsample-sign-in-status,
+#sign-in-status {
   font-weight: bold;
 }
 pre {
@@ -60,13 +63,14 @@ h3 {
   color: white;
 }
 #verification-code-form {
-  display:none;
+  display: none;
 }
 #recaptcha-container {
   margin-top: 10px;
   margin-bottom: 20px;
 }
-#verify-code-button, #cancel-verify-code-button {
+#verify-code-button,
+#cancel-verify-code-button {
   margin-left: 20px;
 }
 #sign-out-button {
@@ -74,4 +78,53 @@ h3 {
 }
 #sign-in-card {
   z-index: 2;
+}
+
+.qr-container {
+  position: relative;
+}
+
+.qr-container > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-container {
+  display: none;
+}
+
+.loading-container.enabled {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/** Dual ring spinner **/
+.lds-dual-ring {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+.lds-dual-ring:after {
+  content: ' ';
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 0.8s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

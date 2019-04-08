@@ -1,11 +1,16 @@
-//@ts-check
 'use strict';
 
 var RTDB_PREFIX = 'qr_signin';
+
+// var ENDPOINT = 'https://us-central1-mods-test.cloudfunctions.net/getQRCode';
 var ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-7cab-getSignInQRCode';
+  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-2783-getQRCode';
+
+var QR_REFRESH_INTERVAL = 9000;
+var MAX_QR_REFRESH = 5;
 
 var customTokenRef;
+var qrRefreshTimeout;
 
 /**
  * Handle the sign in button press.
@@ -48,17 +53,14 @@ function initApp() {
     if (user) {
       // User is signed in.
 
+      disableSpinner();
       document.getElementById('qrsample-code-image').src = '';
+      if (qrRefreshTimeout) {
+        clearTimeout(qrRefreshTimeout);
+      }
 
-      var displayName = user.displayName;
-      var email = user.email;
-      var emailVerified = user.emailVerified;
-      var photoURL = user.photoURL;
-      var isAnonymous = user.isAnonymous;
-      var uid = user.uid;
-      var providerData = user.providerData;
       document.getElementById('qrsample-sign-in-status').textContent =
-        'Signed in';
+        'Signed in as ' + user.email;
       document.getElementById('qrsample-sign-in').textContent = 'Sign out';
       document.getElementById(
         'qrsample-account-details'
@@ -70,7 +72,7 @@ function initApp() {
       document.getElementById('qrsample-sign-in').textContent = 'Sign In';
       document.getElementById('qrsample-account-details').textContent = 'null';
 
-      getQRCode();
+      startFetchingQRCode();
     }
     document.getElementById('qrsample-sign-in').disabled = false;
   });
@@ -80,11 +82,34 @@ function initApp() {
     .addEventListener('click', toggleSignIn, false);
 }
 
+function startFetchingQRCode(tries) {
+  if (!tries) {
+    tries = 0;
+  }
+
+  if (tries < MAX_QR_REFRESH) {
+    if (qrRefreshTimeout) {
+      clearTimeout(qrRefreshTimeout);
+    }
+
+    getQRCode();
+    qrRefreshTimeout = setTimeout(
+      () => startFetchingQRCode(tries + 1),
+      QR_REFRESH_INTERVAL
+    );
+  } else {
+    document.getElementById('qrsample-code-image').src = '';
+  }
+}
+
 function getQRCode() {
+  enableSpinner();
+
   fetch(ENDPOINT, { cache: 'no-cache' })
     .then(response => response.json())
     .then(json => {
       document.getElementById('qrsample-code-image').src = json.qr;
+      disableSpinner();
       waitForCustomToken(json.token);
     })
     .catch(err => {
@@ -97,7 +122,11 @@ function waitForCustomToken(qrToken) {
     customTokenRef.off();
   }
 
-  customTokenRef = firebase.database().ref(RTDB_PREFIX).child(qrToken).child('ct');
+  customTokenRef = firebase
+    .database()
+    .ref(RTDB_PREFIX)
+    .child(qrToken)
+    .child('ct');
 
   customTokenRef.on('value', snap => {
     const customToken = snap.val();
@@ -109,8 +138,12 @@ function waitForCustomToken(qrToken) {
   });
 }
 
-window.addEventListener('load', initApp);
+function enableSpinner() {
+  document.getElementById('loading-container').classList.add('enabled');
+}
 
-// window.onload = function() {
-//   initApp();
-// };
+function disableSpinner() {
+  document.getElementById('loading-container').classList.remove('enabled');
+}
+
+window.addEventListener('load', initApp);
