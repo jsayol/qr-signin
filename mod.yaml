@@ -5,6 +5,7 @@ description: Perform mobile-to-web cross login with QR codes.
 
 roles:
   - firebase.developAdmin
+  - iam.serviceAccountTokenCreator # Necessary to create custom tokens
 
 resources:
   - name: getSignInQRCode
