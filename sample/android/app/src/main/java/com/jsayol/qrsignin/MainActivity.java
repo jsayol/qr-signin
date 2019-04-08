@@ -1,8 +1,13 @@
 package com.jsayol.qrsignin;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,11 +21,13 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
+    private static final int RC_CODE_VALUE = 9002;
 
     private FirebaseAuth mAuth;
 
     private TextView mStatusView;
     private TextView mDetailView;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         mStatusView = findViewById(R.id.status);
         mDetailView = findViewById(R.id.detail);
@@ -60,6 +69,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Sign in failed
                 Toast.makeText(this, "Sign In Failed", Toast.LENGTH_SHORT).show();
                 updateUI(null);
+            }
+        } else if (requestCode == RC_CODE_VALUE) {
+            String qrValue = data.getStringExtra("qrValue");
+            Log.i(TAG, "CODE = " + qrValue);
+
+            // Vibrate for 250 milliseconds
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                // deprecated in API 26
+                vibrator.vibrate(250);
             }
         }
     }
@@ -106,7 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void scanQRCode() {
         Intent qrScannerIntent = new Intent(getApplicationContext(), QRScannerActivity.class);
-        startActivity(qrScannerIntent);
+        qrScannerIntent.putExtra("requestCode", RC_CODE_VALUE);
+        startActivityForResult(qrScannerIntent, RC_CODE_VALUE);
     }
 
     @Override

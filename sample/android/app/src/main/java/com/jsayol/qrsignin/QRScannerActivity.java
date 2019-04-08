@@ -1,14 +1,18 @@
 package com.jsayol.qrsignin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +58,26 @@ public class QRScannerActivity extends AppCompatActivity
             cameraSource = new CameraSource(this, graphicOverlay);
         }
 
-        cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor());
+        cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor() {
+            protected void onBarcodesDetected(@NonNull List<FirebaseVisionBarcode> barcodes) {
+                if (barcodes.size() > 0) {
+                    String qrValue = null;
+
+                    for (int i = 0; i < barcodes.size(); ++i) {
+                        FirebaseVisionBarcode barcode = barcodes.get(i);
+                        if (barcode == null) {
+                            throw new IllegalStateException("Attempting to read a null barcode.");
+                        }
+                        qrValue = barcode.getRawValue();
+                    }
+
+                    Intent returnIntent = getIntent();
+                    returnIntent.putExtra("qrValue", qrValue);
+                    setResult(returnIntent.getIntExtra("requestCode", 0), returnIntent);
+                    finish();
+                }
+            }
+        });
     }
 
     /**
