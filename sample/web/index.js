@@ -3,10 +3,10 @@
 var RTDB_PREFIX = 'qr_signin';
 
 var GET_QR_ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-82d3-getQRCode';
+  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-489f-getQRCode';
 
 var CANCEL_QR_ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-82d3-cancelQRToken';
+  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-489f-cancelQRToken';
 
 var QR_REFRESH_INTERVAL = 9000;
 var MAX_QR_REFRESH = 5;
@@ -82,7 +82,10 @@ function startFetchingQRCode(tries) {
       QR_REFRESH_INTERVAL
     );
   } else {
-    cancelPreviousToken();
+    if (previousToken) {
+      cancelQRToken(previousToken);
+      previousToken = null;
+    }
     document.getElementById('qrsample-code-image').src = '';
   }
 }
@@ -109,12 +112,12 @@ function getQRCode() {
     });
 }
 
-function cancelPreviousToken() {
-  if (previousToken) {
+function cancelQRToken(qrToken) {
+  if (qrToken) {
     fetch(CANCEL_QR_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({token: previousToken }),
+      body: JSON.stringify({ token: qrToken }),
       cache: 'no-cache',
     }).catch(err => {
       console.log('Something went wrong:', err);
@@ -138,7 +141,10 @@ function waitForCustomToken(qrToken) {
     if (customToken) {
       customTokenRef.off();
       customTokenRef = null;
-      firebase.auth().signInWithCustomToken(customToken);
+      firebase.auth().signInWithCustomToken(customToken).then(() => {
+        previousToken = null;
+        cancelQRToken(qrToken);
+      });
     }
   });
 }

@@ -23,7 +23,7 @@ const cancelQRToken = handler.https.onRequest((req, res) => {
 
     // Check that the QR code token exists in the database and is valid.
     // In this case we don't care if it already expired.
-    if (!(await isQRCodeTokenValid(qrCodeToken, true))) {
+    if (!(await isQRCodeTokenValid(qrCodeToken, true, true))) {
       console.log(`Called with invalid token: ${qrCodeToken}`);
       throw new functions.https.HttpsError(
         'invalid-argument',

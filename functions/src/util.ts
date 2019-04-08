@@ -2,8 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 /** Database path to store QR code tokens */
-export const QR_RTDB_PATH =
-  (process.env.QR_RTDB_PATH as string) || 'qr_signin';
+export const QR_RTDB_PATH = (process.env.QR_RTDB_PATH as string) || 'qr_signin';
 
 /** QR code expiration time (in ms) */
 export const QR_EXPIRATION_TIME =
@@ -66,6 +65,7 @@ export function initAdmin() {
  */
 export async function isQRCodeTokenValid(
   qrCodeToken: string,
+  acceptUsed = false,
   acceptExpired = false
 ): Promise<boolean> {
   let qrSnap: admin.database.DataSnapshot;
@@ -99,8 +99,9 @@ export async function isQRCodeTokenValid(
     return false;
   }
 
-  // Check that the token hasn't been used already
+  // Check that the token hasn't been used already, unless requested to skip this check
   if (
+    !acceptUsed &&
     'used' in qrCodeInfo &&
     (typeof qrCodeInfo.used !== 'boolean' || qrCodeInfo.used === true)
   ) {
