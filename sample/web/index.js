@@ -91,8 +91,6 @@ function startFetchingQRCode(tries) {
 }
 
 function getQRCode() {
-  enableSpinner();
-
   var url = GET_QR_ENDPOINT;
 
   if (previousToken) {
@@ -104,7 +102,6 @@ function getQRCode() {
     .then(json => {
       document.getElementById('qrsample-code-image').src = json.qr;
       previousToken = json.token;
-      disableSpinner();
       waitForCustomToken(json.token);
     })
     .catch(err => {
@@ -139,11 +136,13 @@ function waitForCustomToken(qrToken) {
   customTokenRef.on('value', snap => {
     const customToken = snap.val();
     if (customToken) {
+      enableSpinner();
       customTokenRef.off();
       customTokenRef = null;
       firebase.auth().signInWithCustomToken(customToken).then(() => {
         previousToken = null;
         cancelQRToken(qrToken);
+        disableSpinner();
       });
     }
   });
