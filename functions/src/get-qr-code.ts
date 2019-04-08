@@ -62,7 +62,7 @@ const getQRCode = handler.https.onRequest((req, res) => {
           // Also remove the previous one requested by the same client, if any.
           if (
             typeof req.query.prev === 'string' &&
-            req.query.prev.length === 128
+            req.query.prev.length > 100
           ) {
             value[`${QR_RTDB_PATH}/${req.query.prev}`] = null;
           }

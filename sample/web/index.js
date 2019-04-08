@@ -3,13 +3,14 @@
 var RTDB_PREFIX = 'qr_signin';
 
 var ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-2783-getQRCode';
+  'https://us-central1-mods-test.cloudfunctions.net/mod-qr-signin-0f32-getQRCode';
 
 var QR_REFRESH_INTERVAL = 9000;
 var MAX_QR_REFRESH = 5;
 
 var customTokenRef;
 var qrRefreshTimeout;
+var previousToken;
 
 /**
  * Handle the sign out button press.
@@ -32,7 +33,7 @@ function initApp() {
     var signInStatus = document.getElementById('qrsample-sign-in-status');
     var signOutButton = document.getElementById('qrsample-sign-out');
 
-  if (user) {
+    if (user) {
       // User is signed in.
 
       disableSpinner();
@@ -85,10 +86,14 @@ function startFetchingQRCode(tries) {
 function getQRCode() {
   enableSpinner();
 
-  fetch(ENDPOINT, { cache: 'no-cache' })
+  fetch(ENDPOINT, {
+    cache: 'no-cache',
+    body: JSON.stringify({ prev: previousToken }),
+  })
     .then(response => response.json())
     .then(json => {
       document.getElementById('qrsample-code-image').src = json.qr;
+      previousToken = json.token;
       disableSpinner();
       waitForCustomToken(json.token);
     })

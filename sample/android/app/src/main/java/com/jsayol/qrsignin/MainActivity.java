@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_QR_TOKEN = 9002;
-    private static final String AUTHENTICATE_QR_CODE_ENDPOINT = "mod-qr-signin-2783-authenticateQRCode";
+    private static final String AUTHENTICATE_QR_CODE_ENDPOINT = "mod-qr-signin-0f32-authenticateQRCode";
 
     private FirebaseAuth mAuth;
     private FirebaseFunctions mFunctions;
