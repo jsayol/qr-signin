@@ -9,6 +9,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -84,32 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (requestCode == RC_QR_TOKEN) {
             if (data != null) {
                 String qrToken = data.getStringExtra("qrToken");
-
-                // Vibrate for 250 milliseconds
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    // deprecated in API 26
-                    vibrator.vibrate(250);
-                }
-
-                Task<String> authTask = authenticateQRCode(qrToken);
-                authTask.addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (task.isSuccessful()) {
-                            // Task completed successfully
-                            String result = task.getResult();
-                            Log.i(TAG, "Web client authenticated correctly: " + result);
-                            showSnackbar("Web client authenticated correctly!");
-                        } else {
-                            // Task failed with an exception
-                            Exception exception = task.getException();
-                            Log.i(TAG, "Failed to authenticate web client: " + exception);
-                            showSnackbar("Failed to authenticate web client.");
-                        }
-                    }
-                });
+                authenticateQRCode(qrToken);
+                vibrateFor(250);
             }
         }
     }
@@ -175,12 +152,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private Task<String> authenticateQRCode(String qrToken) {
+    private void vibrateFor(int milliseconds) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // deprecated in API 26
+            vibrator.vibrate(milliseconds);
+        }
+    }
+
+    private void authenticateQRCode(String qrToken) {
+        if (TextUtils.isEmpty(qrToken)) {
+            showSnackbar("Please enter a message.");
+            return;
+        }
+
         // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("token", qrToken);
 
-        return mFunctions
+        mFunctions
                 .getHttpsCallable(AUTHENTICATE_QR_CODE_ENDPOINT)
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
@@ -191,6 +182,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         // propagated down.
                         String result = (String) task.getResult().getData();
                         return result;
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            // Task completed successfully
+                            String result = task.getResult();
+                            Log.i(TAG, "Web client authenticated correctly: " + result);
+                            showSnackbar("Web client authenticated correctly!");
+                        } else {
+                            // Task failed with an exception
+                            Exception exception = task.getException();
+                            Log.i(TAG, "Failed to authenticate web client: " + exception);
+                            showSnackbar("Failed to authenticate web client.");
+                        }
                     }
                 });
     }
