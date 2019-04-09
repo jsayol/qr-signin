@@ -33,6 +33,8 @@ const cancelQRToken = handler.https.onRequest((req, res) => {
 
     // Remove the token
     await removeQRCodeToken(qrCodeToken);
+
+    res.end();
   });
 });
 
