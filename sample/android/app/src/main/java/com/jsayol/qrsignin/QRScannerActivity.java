@@ -21,7 +21,7 @@ import com.jsayol.qrsignin.scanutils.GraphicOverlay;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
 public class QRScannerActivity extends AppCompatActivity
@@ -33,14 +33,14 @@ public class QRScannerActivity extends AppCompatActivity
     private CameraSource cameraSource = null;
     private CameraSourcePreview preview;
     private GraphicOverlay graphicOverlay;
-    private HashSet<String> seenCodes;
+    private HashMap<String, Integer> seenCountMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscanner);
 
-        seenCodes = new HashSet<String>();
+        seenCountMap = new HashMap<>();
 
         preview = (CameraSourcePreview) findViewById(R.id.firePreview);
         if (preview == null) {
@@ -71,7 +71,7 @@ public class QRScannerActivity extends AppCompatActivity
         cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor() {
             protected void onBarcodesDetected(@NonNull List<FirebaseVisionBarcode> barcodes) {
                 if (barcodes.size() > 0) {
-                    String qrValue = null;
+                    String qrValue;
 
                     for (int i = 0; i < barcodes.size(); ++i) {
                         FirebaseVisionBarcode barcode = barcodes.get(i);
@@ -79,18 +79,33 @@ public class QRScannerActivity extends AppCompatActivity
                             throw new IllegalStateException("Attempting to read a null barcode.");
                         }
                         qrValue = barcode.getRawValue();
-                    }
 
-                    if (isValidQRCode(qrValue)) {
-                        String qrToken = qrValue.substring(QR_VALID_PREFIX.length());
-                        Intent returnIntent = getIntent();
-                        returnIntent.putExtra("qrToken", qrToken);
-                        setResult(RESULT_OK, returnIntent);
-                        finish();
-                    } else {
-                        if (!seenCodes.contains(qrValue)) {
-                            seenCodes.add(qrValue);
-                            showSnackbar("Invalid authentication QR code");
+                        if (qrValue != null) {
+                            Integer seenCount = seenCountMap.get(qrValue);
+                            if (seenCount == null) {
+                                seenCount = 0;
+                            }
+                            seenCountMap.put(qrValue, ++seenCount);
+
+                            Log.i(TAG, "SEEN=" + seenCount + " CODE=" + qrValue);
+
+                            if (isValidQRCode(qrValue)) {
+                                // If it's the third time we see this particular valid QR code (presumably
+                                // in a row), we can safely assume it has been correctly decoded.
+                                if (seenCount == 3) {
+                                    String qrToken = qrValue.substring(QR_VALID_PREFIX.length());
+                                    Intent returnIntent = getIntent();
+                                    returnIntent.putExtra("qrToken", qrToken);
+                                    setResult(RESULT_OK, returnIntent);
+                                    finish();
+                                    break;
+                                }
+                            } else {
+                                // Show a message only if it's the first time we see this invalid QR code
+                                if (seenCount == 1) {
+                                    showSnackbar("Invalid authentication QR code");
+                                }
+                            }
                         }
                     }
                 }
@@ -204,7 +219,7 @@ public class QRScannerActivity extends AppCompatActivity
         return false;
     }
 
-    protected boolean isValidQRCode(String qrCode) {
+    protected boolean isValidQRCode(@NonNull String qrCode) {
         final boolean isValidPrefix = qrCode.startsWith(QR_VALID_PREFIX);
         final boolean isValidLength = qrCode.length() > 100;
         return isValidPrefix && isValidLength;
