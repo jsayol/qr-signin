@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package com.jsayol.qrsignin;
+package com.jsayol.qrsignin.scanutils;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -27,10 +27,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 
 import java.io.IOException;
 import java.util.List;
-
-//interface BarcodeDetector {
-//    void onBarcodesDetected(@NonNull List<FirebaseVisionBarcode> barcodes);
-//}
 
 /**
  * Barcode Detector Demo.
@@ -71,15 +67,12 @@ public abstract class BarcodeScanningProcessor extends VisionProcessorBase<List<
             @NonNull FrameMetadata frameMetadata,
             @NonNull GraphicOverlay graphicOverlay) {
         graphicOverlay.clear();
+
         if (originalCameraImage != null) {
             CameraImageGraphic imageGraphic = new CameraImageGraphic(graphicOverlay, originalCameraImage);
             graphicOverlay.add(imageGraphic);
         }
-//        for (int i = 0; i < barcodes.size(); ++i) {
-//            FirebaseVisionBarcode barcode = barcodes.get(i);
-//            BarcodeGraphic barcodeGraphic = new BarcodeGraphic(graphicOverlay, barcode);
-//            graphicOverlay.add(barcodeGraphic);
-//        }
+
         onBarcodesDetected(barcodes);
         graphicOverlay.postInvalidate();
     }

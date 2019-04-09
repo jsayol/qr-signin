@@ -1,9 +1,10 @@
-package com.jsayol.qrsignin;
+package com.jsayol.qrsignin.scanutils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import com.jsayol.qrsignin.GraphicOverlay.Graphic;
+
+import com.jsayol.qrsignin.scanutils.GraphicOverlay.Graphic;
 
 /** Draw camera image to background. */
 public class CameraImageGraphic extends Graphic {

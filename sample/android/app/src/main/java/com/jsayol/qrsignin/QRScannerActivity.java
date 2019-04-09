@@ -14,6 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
+import com.jsayol.qrsignin.scanutils.BarcodeScanningProcessor;
+import com.jsayol.qrsignin.scanutils.CameraSource;
+import com.jsayol.qrsignin.scanutils.CameraSourcePreview;
+import com.jsayol.qrsignin.scanutils.GraphicOverlay;
 
 import java.io.IOException;
 import java.util.ArrayList;

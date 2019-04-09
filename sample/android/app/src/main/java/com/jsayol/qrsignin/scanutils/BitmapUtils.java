@@ -1,4 +1,4 @@
-package com.jsayol.qrsignin;
+package com.jsayol.qrsignin.scanutils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +9,9 @@ import android.graphics.YuvImage;
 import android.hardware.Camera.CameraInfo;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
