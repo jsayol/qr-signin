@@ -7,14 +7,14 @@ if (!flavor || !FLAVORS.includes(flavor)) {
   flavor = FLAVORS[0];
 }
 
-const pkg = require(join(__dirname, '..', 'functions', 'package.json'));
+const pkg = require(join(__dirname, '..', 'package.json'));
 
 const distPkg = {
   name: pkg.name,
   author: pkg.author,
   license: pkg.license,
   repository: pkg.repository,
-  main: pkg.main,
+  main: 'lib/index.js',
   engines: pkg.engines,
   dependencies: pkg.dependencies,
   private: pkg.private,

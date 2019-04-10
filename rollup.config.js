@@ -11,13 +11,15 @@ import typescript from 'rollup-plugin-typescript2';
 const pkg = require('./package.json');
 const external = Object.keys(pkg.dependencies || {});
 
-const flavor = ['rtdb', 'firestore', 'mod-rtdb', 'mod-firestore'].includes(
-  process.env.FLAVOR
-)
-  ? process.env.FLAVOR
-  : 'rtdb';
+if (
+  !['rtdb', 'firestore', 'mod-rtdb', 'mod-firestore'].includes(
+    process.env.FLAVOR
+  )
+) {
+  throw new Error(`Unknow flavor: "${process.env.FLAVOR}"`);
+}
 
-const outputDir = path.join(__dirname, '..', 'dist', flavor, 'lib');
+const outputDir = path.join(__dirname, 'dist', process.env.FLAVOR, 'lib');
 rimraf.sync(outputDir);
 
 export default {
@@ -30,9 +32,9 @@ export default {
   external: [...external, 'fs', 'crypto'],
   plugins: [
     resolve(),
-    typescript({ cacheRoot: path.join(__dirname, '..', '.rpt2_cache') }),
+    typescript({ cacheRoot: path.join(__dirname, '.rpt2_cache') }),
     replace({
-      'process.env.FLAVOR': JSON.stringify(flavor),
+      'process.env.FLAVOR': JSON.stringify(process.env.FLAVOR),
       'process.env.BUILD': JSON.stringify(process.env.BUILD || 'prod'),
       'process.env.NOT_MODS': JSON.stringify(process.env.NOT_MODS || false),
       'process.env.USE_EMULATOR': JSON.stringify(
