@@ -1,7 +1,7 @@
 specVersion: v1beta1
-name: qr-signin
+name: qr-signin-firestore
 version: 1.0.0
-description: Perform mobile-to-web cross login with QR codes.
+description: Perform mobile-to-web cross login with QR codes (Firestore version)
 
 roles:
   - firebase.developAdmin
@@ -13,33 +13,35 @@ resources:
     properties:
       runtime: nodejs8
       httpsTrigger: {}
+      sourceDirectory: .
   - name: authenticateQRCode
     type: firebasemods.v1beta1.function
     properties:
       runtime: nodejs8
       httpsTrigger: {}
+      sourceDirectory: .
   - name: cancelQRToken
     type: firebasemods.v1beta1.function
     properties:
       runtime: nodejs8
       httpsTrigger: {}
-  # - name: qrTokensCleanup
-  #   type: firebasemods.v1beta1.function
-  #   properties:
-  #     runtime: nodejs8
-  #     eventTrigger:
-  #       eventType: google.pubsub.topic.publish
-  #       resource: projects/${PROJECT_ID}/topics/qr-tokens-cleanup
+      sourceDirectory: .
+  - name: cleanupQRTokens
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
 
 env:
-  - var: QR_RTDB_PATH
-    label: Database path for QR codes
+  - var: QR_FIRESTORE_COLLECTION
+    label: Firestore collection for QR codes
     default: qr_signin
     validationRegex: ^\S+$
     validationErrorMessage: Path cannot have spaces.
     description: >-
-      What is the database path in which you want the mod to store temporary
-      information about the generated QR codes?
+      What is the Firestore collection in which to store temporary information
+      about the generated QR codes?
   - var: QR_EXPIRATION_TIME
     label: QR code expiration time
     default: "10"

@@ -1,17 +1,16 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import * as qrcode from 'qrcode';
 import cors from 'cors';
 import { randomBytes } from 'crypto';
 import {
   initAdmin,
-  QR_RTDB_PATH,
   QR_CODE_BG_COLOR,
   QR_CODE_FG_COLOR,
   QR_CODE_ERROR_LEVEL,
   QR_CODE_SCALE,
   QR_CODE_MARGIN,
-  QR_CODE_PREFIX
+  QR_CODE_PREFIX,
+  saveQRCodeToken
 } from './util';
 
 initAdmin();
@@ -42,36 +41,16 @@ const getQRCode = handler.https.onRequest((req, res) => {
     }
 
     // We convert the buffer of random bytes into a base64 string.
-    // Since we're going to use this string as a key in the database and
-    // Firebase doesn't allow the '/' character in keys, we replace them
-    // with '-'.
+    // Since we might use this string as a key in the database and
+    // Firebase doesn't allow the '/' character in keys, we replace
+    // them with '-'.
     const qrCodeToken = randomBuffer.toString('base64').replace(/\//g, '-');
 
+    // Save the generated token to the database. This might be RTDB or Firestore,
+    // depending on the choice previously made by the user during installation.
+    await saveQRCodeToken(qrCodeToken, req);
+
     let qrCodeData: string;
-    try {
-      // Save the generated random string to the database for future reference.
-      const value: { [k: string]: any } = {
-        [`${QR_RTDB_PATH}/${qrCodeToken}`]: {
-          ts: admin.database.ServerValue.TIMESTAMP,
-          ip: req.ip
-        }
-      };
-
-      // Also remove the previous one requested by the same client, if any.
-      if (typeof req.query.prev === 'string' && req.query.prev.length > 100) {
-        value[`${QR_RTDB_PATH}/${req.query.prev}`] = null;
-      }
-
-      await admin
-        .database()
-        .ref()
-        .update(value);
-    } catch (err) {
-      // Something went wrong while writing to the database.
-      console.error('Failed to write QR code token to the database!', err);
-      throw new functions.https.HttpsError('internal', 'Internal error.');
-    }
-
     try {
       // Generate QR for the generated random token.
       qrCodeData = await qrcode.toDataURL(QR_CODE_PREFIX + qrCodeToken, {

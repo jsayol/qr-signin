@@ -1,0 +1,61 @@
+specVersion: v1beta1
+name: qr-signin-rtdb
+version: 1.0.0
+description: Perform mobile-to-web cross login with QR codes (RTDB version)
+
+roles:
+  - firebase.developAdmin
+  - iam.serviceAccountTokenCreator # Necessary to create custom tokens
+
+resources:
+  - name: getQRCode
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
+  - name: authenticateQRCode
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
+  - name: cancelQRToken
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
+  - name: cleanupQRTokens
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
+
+env:
+  - var: QR_RTDB_PATH
+    label: Database path for QR codes
+    default: qr_signin
+    validationRegex: ^\S+$
+    validationErrorMessage: Path cannot have spaces.
+    description: >-
+      What is the database path in which to store temporary information
+      about the generated QR codes?
+  - var: QR_EXPIRATION_TIME
+    label: QR code expiration time
+    default: "10"
+    validationRegex: ^\d+$
+    validationErrorMessage: Invalid QR_EXPIRATION_TIME, must be a positive integer.
+    description: >-
+      For how long, in seconds, should a generated QR code be valid before
+      expiring? This should ideally be under 15 seconds.
+  - var: QR_CODE_ERROR_LEVEL
+    label: QR code error correction level
+    default: L
+    validationRegex: ^(L|M|Q|H)$
+    validationErrorMessage: "Invalid QR_CODE_ERROR_LEVEL, must be one of: L, M, Q, H."
+    description: >-
+      What error correction capability should the generated QR codes have? It's OK to
+      leave this on L (*low*) since the codes will be read from a computer screen.
+      Possible values are: L (for 7%), M (for 15%), Q (for 25%), H (for 30%).

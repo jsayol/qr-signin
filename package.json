@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dist": "npm run dist:rtdb && npm run dist:firestore && npm run dist:mod-rtdb && npm run dist:mod-firestore",
+    "dist:rtdb": "cd functions && npm run build:dist:rtdb && ts-node ../scripts/dist.ts rtdb",
+    "dist:firestore": "cd functions && npm run build:dist:firestore && ts-node ../scripts/dist.ts firestore",
+    "dist:mod-rtdb": "cd functions && npm run build:dist:mod-rtdb && ts-node ../scripts/dist.ts mod-rtdb",
+    "dist:mod-firestore": "cd functions && npm run build:dist:mod-firestore && ts-node ../scripts/dist.ts mod-firestore"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.2",
+    "ts-node": "^8.0.3"
+  }
+}

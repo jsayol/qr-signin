@@ -4,23 +4,28 @@
     "name": "Josep Sayol",
     "email": "josep.sayol@gmail.com"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/jsayol/qr-signin.git"
   },
   "scripts": {
     "lint": "tslint --project tsconfig.json",
-    "build": "rimraf lib && rollup -c",
-    "build:notmods": "rimraf lib && rollup -c --environment NOT_MODS",
-    "build:dev": "rimraf lib && rollup -c --environment BUILD:dev",
-    "build:emu": "rimraf lib && rollup -c --environment BUILD:dev,USE_EMULATOR",
+    "build": "rollup -c",
+    "build:notmods": "rollup -c --environment NOT_MODS",
+    "build:dev": "rollup -c --environment BUILD:dev",
+    "build:emu": "rollup -c --environment BUILD:dev,USE_EMULATOR",
     "serve": "npm run build:dev && firebase serve --only functions",
     "serve:emu": "npm run build:emu && firebase serve --only functions",
     "shell": "npm run build:dev && firebase functions:shell",
     "shell:emu": "npm run build:emu && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "build:dist:rtdb": "rollup -c --environment NOT_MODS,FLAVOR:rtdb",
+    "build:dist:firestore": "rollup -c --environment NOT_MODS,FLAVOR:firestore",
+    "build:dist:mod-rtdb": "rollup -c --environment FLAVOR:mod-rtdb",
+    "build:dist:mod-firestore": "rollup -c --environment FLAVOR:mod-firestore"
   },
   "main": "lib/index.js",
   "dependencies": {

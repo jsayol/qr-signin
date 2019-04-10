@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "source": ".",
+    "predeploy": [
+      "yarn install"
+    ]
+  }
+}

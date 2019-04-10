@@ -1,10 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {
-  QR_RTDB_PATH,
   initAdmin,
   isQRCodeTokenValid,
-  removeQRCodeToken
+  removeQRCodeToken,
+  addCustomTokenToQRCodeToken
 } from './util';
 
 initAdmin();
@@ -83,30 +83,6 @@ async function generateCustomToken(uid: string): Promise<string> {
   }
 
   return customToken;
-}
-
-/**
- * Adds a generated custom token to a QR code token information.
- * Additionally, marks the QR code token as used.
- */
-async function addCustomTokenToQRCodeToken(
-  qrCodeToken: string,
-  customToken: string
-): Promise<void> {
-  try {
-    await admin
-      .database()
-      .ref(QR_RTDB_PATH)
-      .child(qrCodeToken)
-      .update({
-        used: true,
-        ct: customToken
-      });
-  } catch (err) {
-    // Something went wrong while writing to the database.
-    console.error('Failed to write custom token to the database!', err);
-    throw new functions.https.HttpsError('internal', 'Internal error.');
-  }
 }
 
 exports = module.exports = authenticateQRCode;

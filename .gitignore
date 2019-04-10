@@ -28,10 +28,14 @@ node_modules/
 .firebaserc
 
 # Test config
-config/
+/config/
 
 # Rollup TypeScript cache
-.rpt2_cache/
+/.rpt2_cache/
 
 # Temporary samples
-sample/other
+/sample/other
+
+# Build files in dist folder
+/dist/*/lib
+/dist/*/package.json
