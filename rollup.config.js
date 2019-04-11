@@ -16,10 +16,18 @@ if (
     process.env.FLAVOR
   )
 ) {
-  throw new Error(`Unknow flavor: "${process.env.FLAVOR}"`);
+  if (process.env.BUILD === 'dev') {
+    process.env.FLAVOR = 'rtdb';
+  } else {
+    throw new Error(`Unknow flavor: "${process.env.FLAVOR}"`);
+  }
 }
 
-const outputDir = path.join(__dirname, 'dist', process.env.FLAVOR, 'lib');
+const outputDir =
+  process.env.BUILD === 'dev'
+    ? path.join(__dirname, 'functions', 'lib')
+    : path.join(__dirname, 'dist', process.env.FLAVOR, 'lib');
+
 rimraf.sync(outputDir);
 
 export default {
@@ -29,7 +37,7 @@ export default {
     format: 'cjs',
     sourcemap: true
   },
-  external: [...external, 'fs', 'crypto'],
+  external: [...external, 'fs', 'crypto', 'url', 'path'],
   plugins: [
     resolve(),
     typescript({ cacheRoot: path.join(__dirname, '.rpt2_cache') }),

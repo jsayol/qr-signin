@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { join as joinPath } from 'path';
 
 /** Database path to store QR code tokens */
 export const QR_RTDB_PATH = process.env.QR_RTDB_PATH || 'qr_signin';
@@ -63,7 +64,9 @@ export function initAdmin() {
         Promise.resolve({ accessToken: 'owner' });
     } else if (process.env.BUILD === 'dev') {
       admin.initializeApp({
-        credential: admin.credential.cert('../config/serviceAccountKey.json'),
+        credential: admin.credential.cert(
+          joinPath(__dirname, '..', '..', 'config', 'serviceAccountKey.json')
+        ),
         databaseURL: 'https://mods-test.firebaseio.com'
       });
     } else {

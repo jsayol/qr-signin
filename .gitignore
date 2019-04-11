@@ -36,6 +36,7 @@ node_modules/
 # Temporary samples
 /sample/other
 
-# Build files in dist folder
+# Build files
+/functions/lib
 /dist/*/lib
 /dist/*/package.json
