@@ -23,7 +23,7 @@ const outputDir = path.join(__dirname, 'dist', process.env.FLAVOR, 'lib');
 rimraf.sync(outputDir);
 
 export default {
-  input: glob.sync('src/**/*.ts'),
+  input: glob.sync('functions/src/**/*.ts'),
   output: {
     dir: outputDir,
     format: 'cjs',
