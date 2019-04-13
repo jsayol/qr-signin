@@ -1,38 +1,42 @@
 {
   "project_info": {
-    "project_number": "392708749852",
-    "firebase_url": "https://mods-test.firebaseio.com",
-    "project_id": "mods-test",
-    "storage_bucket": "mods-test.appspot.com"
+    "project_number": "121122271837",
+    "firebase_url": "https://qr-signin.firebaseio.com",
+    "project_id": "qr-signin",
+    "storage_bucket": "qr-signin.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:392708749852:android:2d266bc1449325b5",
+        "mobilesdk_app_id": "1:121122271837:android:2d266bc1449325b5",
         "android_client_info": {
           "package_name": "com.jsayol.qrsignin"
         }
       },
       "oauth_client": [
         {
-          "client_id": "392708749852-q3ioump0i3mkf5881k4qkkbvk954662m.apps.googleusercontent.com",
+          "client_id": "121122271837-aau3f2corctq9d25vfd6eqkvvs4ttlmm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.jsayol.qrsignin",
             "certificate_hash": "e6b1c381f6a5af6d89e7ea43d5f26bfe7bef956c"
           }
+        },
+        {
+          "client_id": "121122271837-o7q3lpo9ci1tsig2l6ugl0udea2lloke.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA2L68dvT2bvlNuBaEViRLKG8hN_B7BHEg"
+          "current_key": "AIzaSyBlQ-WWpdNs8ZT3q1bVH7_SyWX7rdyoUPk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "392708749852-bgedcr655vsd1e5gea3ouj87u8m0aeoi.apps.googleusercontent.com",
+              "client_id": "121122271837-o7q3lpo9ci1tsig2l6ugl0udea2lloke.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

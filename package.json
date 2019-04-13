@@ -13,7 +13,6 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "build": "rollup -c",
-    "build:notmods": "rollup -c --environment NOT_MODS",
     "build:dev": "rollup -c --environment BUILD:dev",
     "build:emu": "rollup -c --environment BUILD:dev,USE_EMULATOR",
     "serve": "npm run build:dev && firebase serve --only functions",

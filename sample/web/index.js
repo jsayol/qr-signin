@@ -1,13 +1,12 @@
 'use strict';
 
-var RTDB_PREFIX = 'qr_signin';
-
 var GET_QR_ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/getQRCode';
+  'https://us-central1-qr-signin.cloudfunctions.net/getQRCode';
 
 var CANCEL_QR_ENDPOINT =
-  'https://us-central1-mods-test.cloudfunctions.net/cancelQRToken';
+  'https://us-central1-qr-signin.cloudfunctions.net/cancelQRToken';
 
+var RTDB_PREFIX = 'qr_signin';
 var QR_REFRESH_INTERVAL = 9000;
 var MAX_QR_REFRESH = 5;
 

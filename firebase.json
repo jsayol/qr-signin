@@ -1,9 +1,10 @@
 {
   "functions": {
-    "source": ".",
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint",
-      "npm --prefix \"$RESOURCE_DIR\" run build:dev"
-    ]
+    "source": "dist/rtdb",
+    "predeploy": ["npm run lint", "npm run build:dist:rtdb"]
+  },
+  "hosting": {
+    "public": "sample/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }
