@@ -1,4 +1,6 @@
 # Firebase Auth QR Sign In
+![](sample/qr-signin.gif)
+
 To try the sample:
 1. Build the Android app and install it on your phone (one click through Android Studio)
 2. Sign in to the app, either with email/password or with your Google account
