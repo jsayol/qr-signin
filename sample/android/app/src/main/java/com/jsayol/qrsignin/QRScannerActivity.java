@@ -12,6 +12,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.jsayol.qrsignin.scanutils.BarcodeScanningProcessor;
@@ -25,7 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class QRScannerActivity extends AppCompatActivity
-        implements ActivityCompat.OnRequestPermissionsResultCallback {
+        implements ActivityCompat.OnRequestPermissionsResultCallback,
+        CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "OldQRScannerActivity";
     private static final int PERMISSION_REQUESTS = 1;
     private static final String QR_VALID_PREFIX = "qrAuth$";
@@ -51,7 +55,12 @@ public class QRScannerActivity extends AppCompatActivity
             Log.d(TAG, "graphicOverlay is null");
         }
 
-        Log.d(TAG, "Camera.getNumberOfCameras() = " + Camera.getNumberOfCameras());
+        ToggleButton facingSwitch = (ToggleButton) findViewById(R.id.facingSwitch);
+        facingSwitch.setOnCheckedChangeListener(this);
+        // Hide the toggle button if there is only 1 camera
+        if (Camera.getNumberOfCameras() == 1) {
+            facingSwitch.setVisibility(View.GONE);
+        }
 
         if (allPermissionsGranted()) {
             Log.d(TAG, "All permissions granted");
@@ -60,6 +69,20 @@ public class QRScannerActivity extends AppCompatActivity
             Log.d(TAG, "Getting runtime permissions");
             getRuntimePermissions();
         }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.d(TAG, "Set facing");
+        if (cameraSource != null) {
+            if (isChecked) {
+                cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+            } else {
+                cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+            }
+        }
+        preview.stop();
+        startCameraSource();
     }
 
     private void createCameraSource() {
