@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Firebase QR Auth</string>
+    <string name="app_name">QR SignIn</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="loading">Loading…</string>
