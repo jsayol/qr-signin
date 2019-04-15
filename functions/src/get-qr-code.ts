@@ -20,7 +20,7 @@ const handler =
     ? functions
     : functions.handler;
 
-const getQRCode = handler.https.onRequest((req, res) => {
+export const getQRCode = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
     // Only allow GET requests.
@@ -90,5 +90,3 @@ const getQRCode = handler.https.onRequest((req, res) => {
     // Done!
   });
 });
-
-exports = module.exports = getQRCode;

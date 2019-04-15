@@ -9,7 +9,7 @@ const handler =
     ? functions
     : functions.handler;
 
-const cancelQRToken = handler.https.onRequest((req, res) => {
+export const cancelQRToken = handler.https.onRequest((req, res) => {
   return cors({ origin: true })(req, res, async () => {
     // Only allow POST requests.
     if (req.method !== 'POST') {
@@ -37,5 +37,3 @@ const cancelQRToken = handler.https.onRequest((req, res) => {
     res.end();
   });
 });
-
-exports = module.exports = cancelQRToken;

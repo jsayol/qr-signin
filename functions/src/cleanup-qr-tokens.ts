@@ -16,7 +16,7 @@ const handler =
 /**
  * Clean up any expired QR code tokens.
  */
-const cleanupQRTokens = handler.https.onRequest((req, res) => {
+export const cleanupQRTokens = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
     if (USE_RTDB) {
@@ -63,7 +63,7 @@ const cleanupQRTokens = handler.https.onRequest((req, res) => {
       console.error(`Unknown build flavor "${process.env.FLAVOR}"`);
       throw new functions.https.HttpsError('internal', 'Internal error.');
     }
+
+    res.end();
   });
 });
-
-exports = module.exports = cleanupQRTokens;

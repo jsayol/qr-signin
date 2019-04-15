@@ -1,15 +1,18 @@
-// This check will prevent deploying if for some reason we've build
-// with an invalid flavor.
+/*
+  This check will prevent deploying if for some reason we've build
+  with an invalid flavor.
+*/
 if (
-  !['rtdb', 'firestore', 'mod-rtdb', 'mod-firestore'].includes(
-    process.env.FLAVOR!
-  )
+  process.env.FLAVOR !== 'rtdb' &&
+  process.env.FLAVOR !== 'firestore' &&
+  process.env.FLAVOR !== 'mod-rtdb' &&
+  process.env.FLAVOR !== 'mod-firestore'
 ) {
   throw new Error(`Unknown build flavor "${process.env.FLAVOR}"`);
 }
 
-exports.getQRCode = require('./get-qr-code');
-exports.authenticateQRCode = require('./authenticate-qr-code');
-exports.cancelQRToken = require('./cancel-qr-token');
-exports.cleanupQRTokens = require('./cleanup-qr-tokens');
-exports.initialize = require('./initialize');
+export { getQRCode } from './get-qr-code';
+export { authenticateQRCode } from './authenticate-qr-code';
+export { cancelQRToken } from './cancel-qr-token';
+export { cleanupQRTokens } from './cleanup-qr-tokens';
+export { initialize } from './initialize';

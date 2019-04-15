@@ -13,7 +13,7 @@ const handler =
     ? functions
     : functions.handler;
 
-const initialize = handler.https.onRequest((req, res) => {
+export const initialize = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
     // Only allow GET requests.
@@ -161,5 +161,3 @@ function checkRulesAlreadyApplied(
 function contains(obj: { [k: string]: any }, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }
-
-exports = module.exports = initialize;

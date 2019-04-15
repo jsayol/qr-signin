@@ -20,7 +20,7 @@ const handler =
  * Once correctly authenticated, it generates a custom token (JWT) that the
  * web session can use to sign in.
  */
-const authenticateQRCode = handler.https.onCall(async (data, context) => {
+export const authenticateQRCode = handler.https.onCall(async (data, context) => {
   // Mock auth context during development
   if (process.env.BUILD === 'dev') {
     context.auth = { uid: '123456780' } as any;
@@ -84,5 +84,3 @@ async function generateCustomToken(uid: string): Promise<string> {
 
   return customToken;
 }
-
-exports = module.exports = authenticateQRCode;
