@@ -1,6 +1,9 @@
 Your mod is installed and almost ready!
 
-You need to set the correct permissions for the Firestore collection that will store the temporary QR code information. You should add this to your rules:
+You need to set the correct permissions for the database path that will store the temporary QR code information.
+You can do this simply by opening this URL: ${function:initialize.url}
+
+Alternatively, you can do it manually by adding this to your rules:
 
 ```js
 service cloud.firestore {
@@ -17,7 +20,7 @@ service cloud.firestore {
 
 Workflow from you website:
 
-1. Make a request to the endpoint to generate a new QR code (it's a regular HTTPS function). This will respond with a token and a dataurl-encoded image for the QR code.
+1. Make a request to the URL to generate a new QR code (it's a regular HTTPS function). This will respond with a token and a dataurl-encoded image for the QR code.
 2. Show the QR code to the user.
 3. Lsten for changes in Firestore at the `${QR_FIRESTORE_COLLECTION}/`*`<token>`*`/ct` path.
    3.1. If there's no update at that path before ${QR_EXPIRATION_TIME} seconds pass, remove the listener and repeat from point 1. Keep doing this as many times as you want before cancelling (something like 5 times sounds reasonable).

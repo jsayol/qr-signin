@@ -4,8 +4,9 @@ version: 1.0.0
 description: Perform mobile-to-web cross login with QR codes (Firestore version)
 
 roles:
-  - firebase.developAdmin
-  - iam.serviceAccountTokenCreator # Necessary to create custom tokens
+  - role: firebase.developAdmin
+  - role: iam.serviceAccountTokenCreator
+    reason: Necessary to create custom auth tokens
 
 resources:
   - name: getQRCode
@@ -33,8 +34,8 @@ resources:
       httpsTrigger: {}
       sourceDirectory: .
 
-env:
-  - var: QR_FIRESTORE_COLLECTION
+params:
+  - param: QR_FIRESTORE_COLLECTION
     label: Firestore collection for QR codes
     default: qr_signin
     validationRegex: ^\S+$
@@ -42,7 +43,7 @@ env:
     description: >-
       What is the Firestore collection in which to store temporary information
       about the generated QR codes?
-  - var: QR_EXPIRATION_TIME
+  - param: QR_EXPIRATION_TIME
     label: QR code expiration time
     default: "10"
     validationRegex: ^\d+$
@@ -50,7 +51,7 @@ env:
     description: >-
       For how long, in seconds, should a generated QR code be valid before
       expiring? This should ideally be under 15 seconds.
-  - var: QR_CODE_ERROR_LEVEL
+  - param: QR_CODE_ERROR_LEVEL
     label: QR code error correction level
     default: L
     validationRegex: ^(L|M|Q|H)$
