@@ -1,8 +1,7 @@
 Your mod is installed and almost ready!
 
-You need to set the correct permissions for the database path that will store the temporary QR code information.
-You can do this simply by opening this URL: ${function:initialize.url}
-Alternatively, you can do it manually by adding this to your rules:
+You need to set the correct permissions for the Firestore collection that will store the temporary QR code information.
+You need to integrate this to your Firestore security rules:
 
 ```json
 {

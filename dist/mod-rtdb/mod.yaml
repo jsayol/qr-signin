@@ -33,6 +33,12 @@ resources:
       runtime: nodejs8
       httpsTrigger: {}
       sourceDirectory: .
+  - name: initialize
+    type: firebasemods.v1beta1.function
+    properties:
+      runtime: nodejs8
+      httpsTrigger: {}
+      sourceDirectory: .
 
 params:
   - param: QR_RTDB_PATH

@@ -1,7 +1,3 @@
-/*
-  This check will prevent deploying if for some reason we've build
-  with an invalid flavor.
-*/
 if (
   process.env.FLAVOR !== 'rtdb' &&
   process.env.FLAVOR !== 'firestore' &&
@@ -15,4 +11,9 @@ export { getQRCode } from './get-qr-code';
 export { authenticateQRCode } from './authenticate-qr-code';
 export { cancelQRToken } from './cancel-qr-token';
 export { cleanupQRTokens } from './cleanup-qr-tokens';
-export { initialize } from './initialize';
+
+if (process.env.FLAVOR === 'mod-rtdb') {
+  // This function is only needed for the RTDB version of the Mod
+  const { initialize } = require('./get-qr-code.js');
+  exports.initialize = initialize;
+}
