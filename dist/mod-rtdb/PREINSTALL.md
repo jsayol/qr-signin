@@ -1,3 +1,5 @@
+᠎
+
 The workflow from you website to use this mod is as follows:
 
 1. Make a request to the URL to generate a new QR code (it's a regular HTTPS function). This will respond with a token and a dataurl-encoded image for the QR code.
