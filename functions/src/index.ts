@@ -14,6 +14,6 @@ export { cleanupQRTokens } from './cleanup-qr-tokens';
 
 if (process.env.FLAVOR === 'mod-rtdb') {
   // This function is only needed for the RTDB version of the Mod
-  const { initialize } = require('./get-qr-code.js');
+  const { initialize } = require('./initialize.js');
   exports.initialize = initialize;
 }
