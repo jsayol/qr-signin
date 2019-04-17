@@ -1,12 +1,14 @@
 Your mod is installed and almost ready!
 
-You need to set the correct permissions for the Firestore collection that will store the temporary QR code information.
-You need to integrate this to your Firestore security rules:
+You need to set the correct permissions for the database path that will store the temporary QR code information.
+You can do this simply by opening this URL: ${function:initialize.url}
+
+Alternatively, you can do it manually by adding this to your rules:
 
 ```json
 {
   "rules": {
-    "${QR_RTDB_PATH}": {
+    "${param:QR_RTDB_PATH}": {
       ".read": false,
       ".write": false,
       "$QRtoken": {
@@ -23,8 +25,8 @@ Workflow from you website:
 
 1. Make a request to the URL to generate a new QR code (it's a regular HTTPS function). This will respond with a token and a dataurl-encoded image for the QR code.
 2. Show the QR code to the user.
-3. Lsten for changes in the Realtime Database at the `${QR_RTDB_PATH}/`*`<token>`*`/ct` path.
-   3.1. If there's no update at that path before ${QR_EXPIRATION_TIME} seconds pass, remove the listener and repeat from point 1. Keep doing this as many times as you want before cancelling (something like 5 times sounds reasonable).
+3. Lsten for changes in the Realtime Database at the `${param:QR_RTDB_PATH}/`*`<token>`*`/ct` path.
+   3.1. If there's no update at that path before ${param:QR_EXPIRATION_TIME} seconds pass, remove the listener and repeat from point 1. Keep doing this as many times as you want before cancelling (something like 5 times sounds reasonable).
 4. Once you get a value at that path, use it to sign in with `firebase.auth().signInWithCustomToken()`.
 
 Workflow from you app:
@@ -35,7 +37,7 @@ Workflow from you app:
 
 URL endpoints:
 
-- Generate QR code: ${FUNCTION_URL_GETQRCODE}
-- Authenticate QR code: ${FUNCTION_URL_AUTHENTICATEQRCODE}
-- Cancel generated token: ${FUNCTION_URL_CANCELQRTOKEN}
-- Clean up expired tokens: ${FUNCTION_URL_CLEANUPQRTOKENS}
+- Generate QR code: ${function:getQRCode.url}
+- Authenticate QR code: ${function:authenticateQRCode.url}
+- Cancel generated token: ${function:cancelQRToken.url}
+- Clean up expired tokens: ${function:cleanupQRTokens.url}
