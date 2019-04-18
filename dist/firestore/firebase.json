@@ -2,7 +2,7 @@
   "functions": {
     "source": ".",
     "predeploy": [
-      "yarn install"
+      "npm install"
     ]
   }
 }
