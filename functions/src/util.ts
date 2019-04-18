@@ -309,3 +309,19 @@ export async function addCustomTokenToQRCodeToken(
     throw new functions.https.HttpsError('internal', 'Internal error.');
   }
 }
+
+export function assertMethod(
+  requestMethod: string,
+  validMethods: string | string[]
+): void {
+  const isValid =
+    (typeof validMethods === 'string' && requestMethod === validMethods) ||
+    (Array.isArray(validMethods) && validMethods.includes(requestMethod));
+
+  if (!isValid) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      `Invalid method, only ${validMethods} requests are allowed.`
+    );
+  }
+}

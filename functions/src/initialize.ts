@@ -4,7 +4,7 @@ import request from 'request-promise-native';
 import * as jsoncParser from 'jsonc-parser';
 import * as url from 'url';
 import cors from 'cors';
-import { initAdmin, QR_RTDB_PATH } from './util';
+import { initAdmin, QR_RTDB_PATH, assertMethod } from './util';
 
 initAdmin();
 
@@ -16,13 +16,7 @@ const handler =
 export const initialize = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
-    // Only allow GET requests.
-    if (req.method !== 'GET') {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'Invalid method, only GET requests are allowed.'
-      );
-    }
+    assertMethod(req.method, 'GET');
 
     const currentRules = await getRules();
     const segments = QR_RTDB_PATH.replace(/^\s+|\s+$/g, '')

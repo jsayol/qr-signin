@@ -5,7 +5,8 @@ import {
   QR_RTDB_PATH,
   QR_FIRESTORE_COLLECTION,
   USE_RTDB,
-  USE_FIRESTORE
+  USE_FIRESTORE,
+  assertMethod
 } from './util';
 
 const handler =
@@ -19,6 +20,8 @@ const handler =
 export const cleanupQRTokens = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
+    assertMethod(req.method, ['GET', 'POST']);
+
     if (USE_RTDB) {
       // RTDB
       const expired = await admin

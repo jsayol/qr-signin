@@ -1,6 +1,11 @@
 import * as functions from 'firebase-functions';
 import cors from 'cors';
-import { initAdmin, isQRCodeTokenValid, removeQRCodeToken } from './util';
+import {
+  initAdmin,
+  isQRCodeTokenValid,
+  removeQRCodeToken,
+  assertMethod
+} from './util';
 
 initAdmin();
 
@@ -11,13 +16,7 @@ const handler =
 
 export const cancelQRToken = handler.https.onRequest((req, res) => {
   return cors({ origin: true })(req, res, async () => {
-    // Only allow POST requests.
-    if (req.method !== 'POST') {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'Invalid method, only POST requests are allowed.'
-      );
-    }
+    assertMethod(req.method, 'POST');
 
     const qrCodeToken = req.body.token;
 

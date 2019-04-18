@@ -10,7 +10,8 @@ import {
   QR_CODE_SCALE,
   QR_CODE_MARGIN,
   QR_CODE_PREFIX,
-  saveQRCodeToken
+  saveQRCodeToken,
+  assertMethod
 } from './util';
 
 initAdmin();
@@ -23,13 +24,7 @@ const handler =
 export const getQRCode = handler.https.onRequest((req, res) => {
   // Automatically allow cross-origin requests.
   return cors({ origin: true })(req, res, async () => {
-    // Only allow GET requests.
-    if (req.method !== 'GET') {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'Invalid method, only GET requests are allowed.'
-      );
-    }
+    assertMethod(req.method, 'GET');
 
     let randomBuffer: Buffer;
     try {
