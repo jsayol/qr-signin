@@ -145,7 +145,7 @@ export async function isQRCodeTokenValid(
     !acceptExpired &&
     !(
       'exp' in qrCodeInfo &&
-      typeof qrCodeInfo.exp === 'number' &&
+      typeof (qrCodeInfo.exp as any) === 'number' &&
       qrCodeInfo.exp >= Date.now()
     )
   ) {
